@@ -9,14 +9,19 @@ import java.time.LocalDateTime;
 public class VotacaoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="Id")
     private long id;
 
-    @OneToOne
-    @JoinColumn(name ="Pauta")
-    private PautaEntity pauta;
+    //@OneToOne
+    //@JoinColumn(name ="Id_Pauta", referencedColumnName= "Id")
+    //private PautaEntity idPauta;
+
+
+    @Column(name="Id_Pauta")
+    private Long idPauta;
 
     @Column(name="Duracao_Votacao")
-    private long duracaoVotacao;
+    private Long duracaoVotacao;
 
     @Column(name="Quantidade_Sim")
     private int quantidadeSim;
@@ -24,11 +29,23 @@ public class VotacaoEntity {
     @Column(name="Quantidade_Nao")
     private int quantidadeNao;
 
+    @Column(name="Data_Abertura")
+    private LocalDateTime dataAbertura;
+
+    public LocalDateTime getDataAbertura() {
+        return dataAbertura;
+    }
+
+    public void setDataAbertura(LocalDateTime dataAbertura) {
+        this.dataAbertura = dataAbertura;
+    }
+
     public VotacaoEntity(){}
 
-    public VotacaoEntity(long id, PautaEntity pauta, long duracaoVotacao, int quantidadeSim, int quantidadeNao) {
+    public VotacaoEntity(long id, Long idPauta,LocalDateTime dataAbertura, long duracaoVotacao, int quantidadeSim, int quantidadeNao) {
         this.id = id;
-        this.pauta = pauta;
+        this.dataAbertura = dataAbertura;
+        this.idPauta = idPauta;
         this.duracaoVotacao = duracaoVotacao;
         this.quantidadeSim = quantidadeSim;
         this.quantidadeNao = quantidadeNao;
@@ -38,19 +55,19 @@ public class VotacaoEntity {
         return id;
     }
 
-    public PautaEntity getIdPauta() {
-        return pauta;
+    public Long getIdPauta() {
+        return idPauta;
     }
 
-    public void setIdPauta(PautaEntity idPauta) {
-        this.pauta = idPauta;
+    public void setIdPauta(Long idPauta) {
+        this.idPauta = idPauta;
     }
 
-    public long getDuracaoVotacao() {
+    public Long getDuracaoVotacao() {
         return duracaoVotacao;
     }
 
-    public void setDuracaoVotacao(long duracaoVotacao) {
+    public void setDuracaoVotacao(Long duracaoVotacao) {
         this.duracaoVotacao = duracaoVotacao;
     }
 

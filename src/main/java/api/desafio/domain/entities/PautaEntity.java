@@ -1,20 +1,18 @@
 package api.desafio.domain.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "Pauta")
 public class PautaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="Id")
     private long id;
 
-    //@Column(name="titulo")
+    @Column(name="Titulo")
     private String titulo;
 
-    //@Column(name="descricao")
+    @Column(name="Descricao")
     private String descricao;
 
     public PautaEntity() {}

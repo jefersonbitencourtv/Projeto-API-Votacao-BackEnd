@@ -6,20 +6,21 @@ import javax.persistence.*;
 public class VotoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="Id")
     private long id;
 
+    @Column(name="Id_Associado")
     private long idAssociado;
 
-    @OneToOne
-    @JoinColumn(name = "Id_Votacao")
-    private VotacaoEntity idVotacao;
+    @Column(name = "Id_Votacao")
+    private long idVotacao;
 
     @Column(name = "Voto")
     private String voto;
 
     public VotoEntity(){}
 
-    public VotoEntity(long id, long idAssociado, VotacaoEntity idVotacao, String voto) {
+    public VotoEntity(long id, long idAssociado, long idVotacao, String voto) {
         this.id = id;
         this.idAssociado = idAssociado;
         this.idVotacao = idVotacao;
@@ -39,11 +40,11 @@ public class VotoEntity {
         this.idAssociado = idAssociado;
     }
 
-    public VotacaoEntity getIdVotacao() {
+    public long getIdVotacao() {
         return idVotacao;
     }
 
-    public void setIdVotacao(VotacaoEntity idVotacao) {
+    public void setIdVotacao(long idVotacao) {
         this.idVotacao = idVotacao;
     }
 

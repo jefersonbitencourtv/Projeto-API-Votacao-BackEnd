@@ -9,8 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-@Controller
-
+@RestController
 @RequestMapping("/api/v1/votacao")
 public class VotacaoController {
     @Autowired
@@ -28,6 +27,9 @@ public class VotacaoController {
 
     @PostMapping
     public String postVotacao(@RequestBody VotacaoEntity votacao){
+        if(votacao.getDuracaoVotacao()==null) {
+            votacao.setDuracaoVotacao(1L);
+        }
         VotacaoEntity v = service.save(votacao);
         return "Votacao criada com sucesso, ID: " + v.getId();
     }
