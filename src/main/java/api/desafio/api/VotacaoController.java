@@ -26,7 +26,7 @@ public class VotacaoController {
     }
 
     @PostMapping
-    public String postVotacao(@RequestBody VotacaoEntity votacao){
+    public String postVotacao(@RequestBody VotacaoEntity votacao) throws Exception {
         if(votacao.getDuracaoVotacao()==null) {
             votacao.setDuracaoVotacao(1L);
         }

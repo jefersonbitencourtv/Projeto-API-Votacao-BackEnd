@@ -1,5 +1,6 @@
 package api.desafio.domain.services;
 
+import api.desafio.domain.entities.ResultadoEntity;
 import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.repository.VotacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class VotacaoService {
 
     @Autowired
     private VotacaoRepository rep;
+    @Autowired
+    private PautaService pautaService;
 
     public Iterable<VotacaoEntity> getVotacao() {
         return rep.findAll();
@@ -23,10 +26,21 @@ public class VotacaoService {
         return rep.findById(id);
     }
 
-    public VotacaoEntity save(VotacaoEntity votacao) {
+    public VotacaoEntity save(VotacaoEntity votacao) throws Exception {
         //private LocalDateTime dataInicioVotacao = LocalDateTime.now();
+        if(getVotacaoByIdPauta(votacao.getIdPauta()).isPresent()){
+            throw new Exception("Já existe uma votação para a pauta");
+        }
+        if(!(pautaService.getPautaById(votacao.getIdPauta()).isPresent())){
+            throw new Exception("A pauta não existe");
+        }
+
         votacao.setDataAbertura(LocalDateTime.now());
         return rep.save(votacao);
+    }
+
+    private Optional<VotacaoEntity> getVotacaoByIdPauta(Long idPauta){
+        return rep.findByIdPauta(idPauta);
     }
 
     public Long getDuracaoVotacao(Long id) {
@@ -39,22 +53,6 @@ public class VotacaoService {
         return findById.get().getDataAbertura();
     }
 
-    public void updateVoto(String voto, Long id){
-        Optional<VotacaoEntity> vt = getVotacaoById(id);
-        VotacaoEntity db = vt.get();
 
-        if(vt.isPresent()){
-            //VotacaoEntity db = vt.get();
-            if(voto.equals("SIM")) {
-                int i = db.getQuantidadeSim();
-                db.setQuantidadeSim(i+1);
-            }
-            if(voto.equals("NAO")) {
-                int i = db.getQuantidadeNao();
-                db.setQuantidadeNao(i+1);
-            }
-            rep.save(db);
-        }
-    }
 }
 
