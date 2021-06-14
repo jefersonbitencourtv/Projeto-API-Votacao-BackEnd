@@ -26,28 +26,18 @@ public class PautaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getId(@PathVariable Long id){
-        Optional<PautaDTO> pDTO = service.getPautaById(id);
-        return pDTO.map(p-> ResponseEntity.ok(p)).orElse(ResponseEntity.notFound().build());
-        /*return pDTO.isPresent() ?
-                ResponseEntity.ok(pDTO.get()) :
-                ResponseEntity.notFound().build();*/
-        /*if(pDTO.isPresent()){
-            return ResponseEntity.ok(pDTO.get());
-        }else{
-            return ResponseEntity.notFound().build();
-        }*/
+    public ResponseEntity getId(@PathVariable("id") Long id){
+        PautaDTO pDTO = service.getPautaById(id);
+        return ResponseEntity.ok(pDTO);
+
     }
 
     @PostMapping
     public ResponseEntity postPauta(@RequestBody PautaEntity pauta){
-        try{
             PautaDTO pDTO = service.save(pauta);
             URI location = getUri(pDTO.getId());
             return ResponseEntity.created(location).build();
-        }catch(Exception ex){
-            return ResponseEntity.badRequest().build();
-        }
+
     }
 
     private URI getUri(long id) {

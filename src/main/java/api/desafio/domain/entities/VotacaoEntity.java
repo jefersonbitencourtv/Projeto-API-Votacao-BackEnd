@@ -1,11 +1,15 @@
 package api.desafio.domain.entities;
 
 import api.desafio.domain.services.PautaService;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name="votacao")
 public class VotacaoEntity {
     @Id
@@ -19,13 +23,12 @@ public class VotacaoEntity {
 
 
     @Column(name="Id_Pauta")
-    private Long idPauta;
+    private long idPauta;
 
     @Column(name="Duracao_Votacao")
     private Long duracaoVotacao;
 
     @Column(name="Data_Abertura")
     private LocalDateTime dataAbertura;
-
 
 }

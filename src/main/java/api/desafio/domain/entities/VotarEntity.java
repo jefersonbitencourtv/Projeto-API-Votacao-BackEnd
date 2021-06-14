@@ -1,9 +1,12 @@
 package api.desafio.domain.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 @Data
+@NoArgsConstructor
 @Entity(name="votar")
 public class VotarEntity {
     @Id
@@ -20,4 +23,6 @@ public class VotarEntity {
     @Column(name = "Voto")
     private String voto;
 
+    public VotarEntity(long id, long idAssociado, long idVotacao, String voto) {
+    }
 }

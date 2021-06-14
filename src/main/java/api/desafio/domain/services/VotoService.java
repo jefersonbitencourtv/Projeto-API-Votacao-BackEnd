@@ -1,12 +1,18 @@
 package api.desafio.domain.services;
 
+import api.desafio.domain.dto.VotarDTO;
 import api.desafio.domain.entities.VotarEntity;
 import api.desafio.domain.repository.VotoRepository;
+import api.desafio.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class VotoService {
     @Autowired
@@ -18,21 +24,20 @@ public class VotoService {
     @Autowired
     private AssociadoService serviceAssociado;
 
-    public Iterable<VotarEntity> getVoto(){
-        return rep.findAll();
+    public List<VotarDTO> getVoto(){
+        return rep.findAll().stream()
+                .map(v->new VotarDTO(v)).collect(Collectors.toList());
     }
 
-    public Optional<VotarEntity> getVotoById(Long id){
-        return rep.findById(id);
+    public VotarDTO getVotoById(long id){
+
+        return rep.findById(id).map(v->new VotarDTO(v)).orElseThrow(()->new ObjectNotFoundException("Voto não encontrado"));
     }
 
-    public VotarEntity save(VotarEntity voto) throws Exception {
-        if (!(serviceVotacao.getVotacaoById(voto.getIdVotacao()).isPresent())) {
-            throw new Exception("Votacao Não Existe");
-        }
-        if(!(serviceAssociado.getAssociadoById(voto.getIdAssociado()).isPresent())){
-            throw new Exception("Associado não existe");
-        }
+    public VotarDTO save(VotarEntity voto) throws Exception {
+        serviceVotacao.getVotacaoById(voto.getIdVotacao());
+        serviceAssociado.getAssociadoById(voto.getIdAssociado());
+
         if (rep.findByIdAssociadoAndIdVotacao(voto.getIdAssociado(), voto.getIdVotacao()).isPresent()) {
             throw new Exception("Associado já votou");
         }
@@ -41,7 +46,7 @@ public class VotoService {
         }
 
         serviceResultado.updateVoto(voto.getVoto().toUpperCase(), voto.getIdVotacao());
-        return rep.save(voto);
+        return new VotarDTO(rep.save(voto));
 
     }
 }
