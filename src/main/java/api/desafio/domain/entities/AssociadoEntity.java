@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity(name="associado")
 @Data
@@ -16,6 +17,7 @@ public class AssociadoEntity {
     @Column(name="Id")
     private long id;
 
+
     @Column(name="cpf")
-    private long cpf;
+    private String cpf;
 }

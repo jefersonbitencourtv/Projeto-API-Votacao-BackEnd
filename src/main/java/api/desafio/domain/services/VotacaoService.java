@@ -1,16 +1,17 @@
 package api.desafio.domain.services;
 
 import api.desafio.domain.dto.VotacaoDTO;
-import api.desafio.domain.entities.ResultadoEntity;
 import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.repository.VotacaoRepository;
-import api.desafio.exception.ObjectNotFoundException;
+import api.desafio.domain.request.VotacaoRequest;
+import api.desafio.domain.response.ResponsePadrao;
+import api.desafio.exception.CampoInvalidoException;
+import api.desafio.exception.JaExisteVotacaoParaAPautaException;
+import api.desafio.exception.ObjetoNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,28 +23,41 @@ public class VotacaoService {
     @Autowired
     private PautaService pautaService;
 
-    public List<VotacaoDTO> getVotacao() {
+    private ResponsePadrao responseP = new ResponsePadrao();
 
-        return rep.findAll().stream().map(v -> new VotacaoDTO(v)).collect(Collectors.toList());
+    public ResponsePadrao getVotacao() {
+        responseP.setListaObjeto(rep.findAll().stream().map(v -> new VotacaoDTO(v)).collect(Collectors.toList()));
+        return responseP;
     }
 
-    public VotacaoDTO getVotacaoById(long id) {
+    public VotacaoDTO getVotacaoById2(long id) {
         return rep.findById(id).map(v -> new VotacaoDTO(v)).orElseThrow(()
-                -> new ObjectNotFoundException("Votacao não encontrada"));
+                -> new ObjetoNaoEncontradoException("Votacao não encontrada"));
     }
 
-    public VotacaoDTO save(VotacaoEntity votacao) throws Exception {
-        //private LocalDateTime dataInicioVotacao = LocalDateTime.now();
-        if(rep.findById(votacao.getId()).isPresent()){
-            throw new IllegalArgumentException("Votacao com id existente");
+    public ResponsePadrao getVotacaoById(long id) {
+        responseP.setObjeto(rep.findById(id).map(v -> new VotacaoDTO(v)).orElseThrow(()
+                -> new ObjetoNaoEncontradoException("Votacao não encontrada")));
+        return responseP;
+    }
+
+    public ResponsePadrao save(VotacaoRequest votacao){
+        if(votacao.getIdPauta() == null){
+            throw new CampoInvalidoException("IdPauta deve ser forneceido");
         }
         if(getVotacaoByIdPauta(votacao.getIdPauta()).isPresent()){
-            throw new Exception("Já existe uma votação para a pauta");
+            throw new JaExisteVotacaoParaAPautaException("Já existe uma votação para a pauta");
         }
-        pautaService.getPautaById(votacao.getIdPauta());
 
-        votacao.setDataAbertura(LocalDateTime.now());
-        return new VotacaoDTO(rep.save(votacao));
+        pautaService.getPautaById(votacao.getIdPauta());
+        VotacaoEntity ve = new VotacaoEntity();
+        ve.setDataAbertura(LocalDateTime.now());
+        ve.setDuracaoVotacao(votacao.getDuracaoVotacao());
+        ve.setIdPauta(votacao.getIdPauta());
+
+        responseP.setObjeto(new VotacaoDTO(rep.save(ve)));
+        responseP.setTexto("Votacao criada com sucesso");
+        return responseP;
     }
 
     private Optional<VotacaoEntity> getVotacaoByIdPauta(long idPauta){

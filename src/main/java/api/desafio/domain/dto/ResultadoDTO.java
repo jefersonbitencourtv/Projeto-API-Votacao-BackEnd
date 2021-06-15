@@ -1,15 +1,10 @@
 package api.desafio.domain.dto;
 
 import api.desafio.domain.entities.ResultadoEntity;
-import api.desafio.domain.entities.VotarEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

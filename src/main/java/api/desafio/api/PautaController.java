@@ -1,18 +1,16 @@
 package api.desafio.api;
 
 import api.desafio.domain.dto.PautaDTO;
-import api.desafio.domain.entities.PautaEntity;
+import api.desafio.domain.request.PautaRequest;
+import api.desafio.domain.response.ResponsePadrao;
 import api.desafio.domain.services.PautaService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/pauta")
@@ -21,27 +19,21 @@ public class PautaController {
     private PautaService service;
 
     @GetMapping
-    public ResponseEntity<List<PautaDTO>> get() {
+    public ResponseEntity<ResponsePadrao> get() {
+
         return ResponseEntity.ok(service.getPauta());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getId(@PathVariable("id") Long id){
-        PautaDTO pDTO = service.getPautaById(id);
-        return ResponseEntity.ok(pDTO);
+    public ResponseEntity<ResponsePadrao> getId(@PathVariable("id") Long id){
+        return ResponseEntity.ok(service.getPautaById(id));
 
     }
 
     @PostMapping
-    public ResponseEntity postPauta(@RequestBody PautaEntity pauta){
-            PautaDTO pDTO = service.save(pauta);
-            URI location = getUri(pDTO.getId());
-            return ResponseEntity.created(location).build();
+    public ResponseEntity<ResponsePadrao> postPauta(@RequestBody PautaRequest pauta){
 
-    }
+            return ResponseEntity.ok(service.save(pauta));
 
-    private URI getUri(long id) {
-        return ServletUriComponentsBuilder.fromCurrentRequest().path("/id")
-                .buildAndExpand(id).toUri();
     }
 }

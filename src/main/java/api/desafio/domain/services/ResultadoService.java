@@ -2,14 +2,13 @@ package api.desafio.domain.services;
 
 import api.desafio.domain.dto.ResultadoDTO;
 import api.desafio.domain.dto.VotacaoDTO;
-import api.desafio.domain.entities.ResultadoEntity;
 import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.repository.ResultadoRepository;
-import api.desafio.exception.ObjectNotFoundException;
+import api.desafio.domain.response.ResponsePadrao;
+import api.desafio.exception.ObjetoNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,22 +19,24 @@ public class ResultadoService {
     @Autowired
     private VotacaoService vtservice;
 
+    private ResponsePadrao responseP = new ResponsePadrao();
+
     public void updateVoto(String voto, long idVotacao){
         ResultadoDTO db;
         if(getResultadoByIdVotacao2(idVotacao).isPresent()){
-            ResultadoDTO rE = getResultadoByIdVotacao(idVotacao);
-            db = rE;
+            Optional<ResultadoDTO> rE = getResultadoByIdVotacao2(idVotacao);
+            db = rE.get();
         }else {
             db = new ResultadoDTO();
             db.setIdVotacao(idVotacao);
 
-            VotacaoDTO vEnt = vtservice.getVotacaoById(idVotacao);
+            VotacaoDTO vEnt = vtservice.getVotacaoById2(idVotacao);
             VotacaoEntity vEntity = vEnt.VotacaoEntity();
 
             db.setIdPauta(vEntity.getIdPauta());
         }
 
-            //VotacaoEntity db = vt.get();
+
             if(voto.equals("SIM")) {
                 int i = db.getQtdSim();
                 db.setQtdSim(i+1);
@@ -44,38 +45,37 @@ public class ResultadoService {
                 int i = db.getQtdNao();
                 db.setQtdNao(i+1);
             }
-            //ResultadoEntity re = new ResultadoEntity();
 
-            //re.setIdPauta(db.getIdPauta());
-            //re.setIdVotacao(db.getIdVotacao());
-            //re.setQtdNao(db.getQtdNao());
-            //re.setQtdSim(db.getQtdSim());
 
             rep.save(db.ResultadoEntity());
-            //rep.save(re);
+
         }
 
-    public ResultadoDTO getResultadoByIdVotacao(Long idVotacao) {
-        return rep.findByIdVotacao(idVotacao).map(r->new ResultadoDTO(r)).orElseThrow(()
-                ->new ObjectNotFoundException("Não existe resultado para essa votação"));
+    public ResponsePadrao getResultadoByIdVotacao(Long idVotacao) {
+        responseP.setObjeto(rep.findByIdVotacao(idVotacao).map(r->new ResultadoDTO(r)).orElseThrow(()
+                ->new ObjetoNaoEncontradoException("Não existe resultado para essa votação")));
+        return responseP;
     }
 
-    public Optional<ResultadoEntity> getResultadoByIdVotacao2(long idVotacao){
-        return rep.findByIdVotacao(idVotacao);
+    public Optional<ResultadoDTO> getResultadoByIdVotacao2(long idVotacao){
+        return rep.findByIdVotacao(idVotacao).map(r->new ResultadoDTO(r));
     }
 
-    public ResultadoDTO getResultadoByIdPauta(Long idPauta) {
-        return rep.findByIdPauta(idPauta).map(r -> new ResultadoDTO(r)).orElseThrow(()
-        -> new ObjectNotFoundException("Não existe resultado para essa pauta"));
+    public ResponsePadrao getResultadoByIdPauta(Long idPauta) {
+        responseP.setObjeto(rep.findByIdPauta(idPauta).map(r -> new ResultadoDTO(r)).orElseThrow(()
+        -> new ObjetoNaoEncontradoException("Não existe resultado para essa pauta")));
+        return responseP;
     }
 
-    public List<ResultadoDTO> getResultado() {
-        return rep.findAll().stream().map(r->new ResultadoDTO(r)).collect(Collectors.toList());
+    public ResponsePadrao getResultado() {
+        responseP.setListaObjeto(
+                rep.findAll().stream().map(r->new ResultadoDTO(r)).collect(Collectors.toList()));
+        return responseP;
     }
 
-    public ResultadoDTO getResultadoById(Long id){
-
-        return rep.findById(id).map(v->new ResultadoDTO(v)).orElseThrow(()
-                -> new ObjectNotFoundException("Não existe resultado com esse id"));
+    public ResponsePadrao getResultadoById(Long id){
+        responseP.setObjeto(rep.findById(id).map(v->new ResultadoDTO(v)).orElseThrow(()
+                -> new ObjetoNaoEncontradoException("Não existe resultado com esse id")));
+        return responseP;
     }
 }

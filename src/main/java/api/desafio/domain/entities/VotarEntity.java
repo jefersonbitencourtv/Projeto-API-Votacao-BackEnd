@@ -1,6 +1,5 @@
 package api.desafio.domain.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

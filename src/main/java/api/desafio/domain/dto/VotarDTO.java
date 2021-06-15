@@ -1,6 +1,5 @@
 package api.desafio.domain.dto;
 
-import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.entities.VotarEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;

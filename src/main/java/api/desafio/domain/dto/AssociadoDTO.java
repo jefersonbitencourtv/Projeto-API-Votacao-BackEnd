@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class AssociadoDTO {
-    private long cpf;
+    private String cpf;
     private long id;
 
     public AssociadoDTO(AssociadoEntity a){
