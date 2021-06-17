@@ -1,5 +1,7 @@
-CREATE DATABASE assembleia;
+apenas este comando ------------>   CREATE DATABASE assembleia;
 
-mysql localhost 3306
+Criação do host
 login: root
 senha: 1234
+
+O mysql localhost deve usar o caminho 3306
