@@ -40,19 +40,12 @@ public class AssociadoService {
         if(associado.getCpf() == null ||associado.getCpf().isEmpty()){
             throw new APIException(APIExceptionEnum.CpfDeveSerPreenchido);
         }
-        /*
-        if(associado.getCpf().matches("[A-Z]*[a-z]*")){
-           throw new CampoInvalidoException("Campo CPF deve conter apenas números");
-        }*/
         if(!(associado.getCpf().matches("[0-9]*"))){
             throw new APIException(APIExceptionEnum.CpfDeveConterApenasNumeros);
         }
         if(associado.getCpf().length() != 11){
             throw new APIException(APIExceptionEnum.CpfDeveConter11Numeros);
         }
-        /*if(ValidadorCPF.isValidCPF(associado.getCpf()) == false) {
-            throw new CPFInvalidoException("CPF inválido");
-        }*/
         if(ValidadorCPF.isValidCPF(associado.getCpf()) == false) {
             throw new APIException(APIExceptionEnum.CPFInvalido);
         }
@@ -64,13 +57,11 @@ public class AssociadoService {
         AssociadoEntity aEntity = new AssociadoEntity();
         aEntity.setCpf(associado.getCpf());
 
-        //AssociadoDTO ab = new AssociadoDTO(aEntity.getCpf() , aEntity.getId());
 
         associadoRepository.save(aEntity);
         AssociadoDTO ab = new AssociadoDTO(aEntity.getCpf() , aEntity.getId());
         responsePadrao.setTexto("Associado cadastrado");
         responsePadrao.setObjeto(ab);
-        //responseP.setObjeto(new AssociadoDTO(rep.save(aEntity)));
 
         return responsePadrao;
     }

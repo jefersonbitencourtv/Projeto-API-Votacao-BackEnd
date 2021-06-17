@@ -1,6 +1,5 @@
 package api.desafio.exception;
 
-import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 public enum APIExceptionEnum {

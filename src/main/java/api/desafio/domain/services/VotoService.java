@@ -60,7 +60,7 @@ public class VotoService {
             throw new APIException(APIExceptionEnum.VotoDeveSerSimOuNao);
         }
         if(voto.getVoto().equals("NÃO")){
-            voto.setVoto(voto.getVoto().replaceAll("NÃO", "NAO"));
+            voto.setVoto(voto.getVoto().replace("NÃO", "NAO"));
         }
         serviceVotacao.getVotacaoById(voto.getIdVotacao());
         serviceAssociado.getAssociadoById(voto.getIdAssociado());
@@ -80,7 +80,6 @@ public class VotoService {
         ve.setIdVotacao(voto.getIdVotacao());
         votoRepository.save(ve);
         VotarDTO dto = new VotarDTO(ve.getId(),ve.getIdAssociado(),ve.getIdVotacao(),ve.getVoto());
-        //responseP.setObjeto(new VotarDTO(rep.save(ve)));
         responsePadrao.setObjeto(dto);
         responsePadrao.setTexto("Voto criado com sucesso");
         return responsePadrao;
