@@ -1,0 +1,7 @@
+create table resultado(
+id bigint not null auto_increment, 
+id_votacao bigint not null,
+id_pauta bigint not null,
+quantidade_sim int null,
+quantidade_Nao int null,
+ primary key (id), foreign key(id_votacao) references Votacao(id), foreign key(id_pauta) references Pauta(id));

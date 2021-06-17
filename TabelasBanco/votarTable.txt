@@ -1,0 +1,10 @@
+
+create table votar(
+Id bigint not null auto_increment, 
+Id_Associado bigint not null, 
+Id_Votacao bigint not null,
+Voto varchar(3) not null,
+ primary key(id),
+ foreign key(Id_Votacao) references Votacao(id),
+ foreign key(Id_Associado) references Associado(id)
+);

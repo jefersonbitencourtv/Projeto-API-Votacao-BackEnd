@@ -1,0 +1,5 @@
+CREATE DATABASE assembleia;
+
+mysql localhost 3306
+login: root
+senha: 1234
