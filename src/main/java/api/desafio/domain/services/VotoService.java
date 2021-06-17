@@ -62,7 +62,9 @@ public class VotoService {
         if(voto.getVoto().equals("NÃO")){
             voto.setVoto(voto.getVoto().replace("NÃO", "NAO"));
         }
+        //Validação existe votação
         serviceVotacao.getVotacaoById(voto.getIdVotacao());
+        //Validação existe associado
         serviceAssociado.getAssociadoById(voto.getIdAssociado());
 
         if (votoRepository.findByIdAssociadoAndIdVotacao(voto.getIdAssociado(), voto.getIdVotacao()).isPresent()) {
@@ -71,7 +73,7 @@ public class VotoService {
         if (LocalDateTime.now().isAfter(serviceVotacao.getDataAberturaUsoValidacaoInserirVoto(voto.getIdVotacao()).plusMinutes(serviceVotacao.getDuracaoVotacaoUsoValidacaoInserirVoto(voto.getIdVotacao())))){
            throw new APIException(APIExceptionEnum.VotacaoNaoEstaDisponivel);
         }
-
+        //Inserir voto no resultado
         serviceResultado.inserirVotoNoResultado(voto.getVoto().toUpperCase(), voto.getIdVotacao());
 
         VotarEntity ve = new VotarEntity();

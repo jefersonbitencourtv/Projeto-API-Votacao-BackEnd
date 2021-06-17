@@ -51,7 +51,7 @@ public class VotacaoService {
         if(getVotacaoByIdPautaUsoValidacaoInserirVotacao(votacao.getIdPauta()).isPresent()){
             throw new APIException(APIExceptionEnum.JaExisteVotacao);
         }
-
+        //Validação pauta existe
         pautaService.getPautaById(votacao.getIdPauta());
 
         VotacaoEntity ve = new VotacaoEntity();

@@ -23,9 +23,11 @@ public class ResultadoService {
 
     public void inserirVotoNoResultado(String voto, long idVotacao){
         ResultadoDTO resultadoDTO;
+        //Se ja existe resultado no banco para a votacao
         if(getResultadoByIdVotacaoUsoParaTestarInserirResultado(idVotacao).isPresent()){
             Optional<ResultadoDTO> rE = getResultadoByIdVotacaoUsoParaTestarInserirResultado(idVotacao);
             resultadoDTO = rE.get();
+        //Se nao cria resultado no banco para a votacao
         }else {
             resultadoDTO = new ResultadoDTO();
             resultadoDTO.setIdVotacao(idVotacao);
