@@ -3,12 +3,17 @@
 
 link do swagger: http://localhost:8080/swagger-ui.html#
 
-Utilizar o mysql workbench para criar o banco
-assembleia
-login: root
-senha:1234
+Utilizar o mysql workbench para criar o banco assembleia
 
-Inserir as tabelas da pasta TabelasVanco
+Inserir as tabelas da pasta TabelasBanco
+
+
+Observação:
+Criação do host
+login: root
+senha: 1234
+O mysql deve usar o caminho localhost:3306
+
 
 ----------------------------------------------------------------
 Funcionamento da api:
