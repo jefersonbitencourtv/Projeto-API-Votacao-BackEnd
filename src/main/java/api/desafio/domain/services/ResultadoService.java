@@ -58,7 +58,7 @@ public class ResultadoService {
     public ResponsePadrao getResultadoByIdVotacao(Long idVotacao) {
         ResponsePadrao responsePadrao = new ResponsePadrao();
         responsePadrao.setObjeto(resultadoRepository.findByIdVotacao(idVotacao)
-                .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdVotacao(),r.getQtdSim(),r.getQtdNao()))
+                .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdPauta(),r.getQtdSim(),r.getQtdNao()))
                 .orElseThrow(()->new APIException(APIExceptionEnum.NaoExisteResultadoParaAVotacao)));
         return responsePadrao;
     }
@@ -71,7 +71,7 @@ public class ResultadoService {
     public ResponsePadrao getResultadoByIdPauta(Long idPauta) {
         ResponsePadrao responsePadrao = new ResponsePadrao();
         responsePadrao.setObjeto(resultadoRepository.findByIdPauta(idPauta)
-                .map(r -> new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdVotacao(),r.getQtdSim(),r.getQtdNao()))
+                .map(r -> new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdPauta(),r.getQtdSim(),r.getQtdNao()))
                 .orElseThrow(()
         -> new APIException(APIExceptionEnum.NaoExisteResultadoParaAPauta)));
         return responsePadrao;
