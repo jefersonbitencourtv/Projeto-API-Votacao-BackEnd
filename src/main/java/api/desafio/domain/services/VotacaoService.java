@@ -5,9 +5,7 @@ import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.repository.VotacaoRepository;
 import api.desafio.domain.request.VotacaoRequest;
 import api.desafio.domain.response.ResponsePadrao;
-import api.desafio.exception.CampoInvalidoException;
-import api.desafio.exception.JaExisteVotacaoParaAPautaException;
-import api.desafio.exception.ObjetoNaoEncontradoException;
+import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,58 +17,66 @@ import java.util.stream.Collectors;
 public class VotacaoService {
 
     @Autowired
-    private VotacaoRepository rep;
+    private VotacaoRepository votacaoRepository;
     @Autowired
     private PautaService pautaService;
 
-    private ResponsePadrao responseP = new ResponsePadrao();
-
     public ResponsePadrao getVotacao() {
-        responseP.setListaObjeto(rep.findAll().stream().map(v -> new VotacaoDTO(v)).collect(Collectors.toList()));
-        return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+        responsePadrao.setListaObjeto(votacaoRepository.findAll()
+                .stream()
+                .map(v -> new VotacaoDTO(v.getId(),v.getIdPauta(),v.getDuracaoVotacao(),v.getDataAbertura()))
+                .collect(Collectors.toList()));
+        return responsePadrao;
     }
 
-    public VotacaoDTO getVotacaoById2(long id) {
-        return rep.findById(id).map(v -> new VotacaoDTO(v)).orElseThrow(()
-                -> new ObjetoNaoEncontradoException("Votacao não encontrada"));
+    public Optional<VotacaoDTO> getVotacaoByIdUsoValidacaoInsercaoResultado(long id) {
+        return votacaoRepository.findById(id)
+                .map(v -> new VotacaoDTO(v.getId(),v.getIdPauta(),v.getDuracaoVotacao(),v.getDataAbertura()));
     }
 
     public ResponsePadrao getVotacaoById(long id) {
-        responseP.setObjeto(rep.findById(id).map(v -> new VotacaoDTO(v)).orElseThrow(()
-                -> new ObjetoNaoEncontradoException("Votacao não encontrada")));
-        return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+        responsePadrao.setObjeto(votacaoRepository.findById(id)
+                .map(v -> new VotacaoDTO(v.getId(),v.getIdPauta(),v.getDuracaoVotacao(),v.getDataAbertura()))
+                .orElseThrow(()-> new APIException(APIExceptionEnum.VotacaoNaoEncontrada)));
+        return responsePadrao;
     }
 
-    public ResponsePadrao save(VotacaoRequest votacao){
+    public ResponsePadrao inserirVotacao(VotacaoRequest votacao){
+        ResponsePadrao responsePadrao = new ResponsePadrao();
         if(votacao.getIdPauta() == null){
-            throw new CampoInvalidoException("IdPauta deve ser forneceido");
+            throw new APIException(APIExceptionEnum.IDPautaDeveSerFornecido);
         }
-        if(getVotacaoByIdPauta(votacao.getIdPauta()).isPresent()){
-            throw new JaExisteVotacaoParaAPautaException("Já existe uma votação para a pauta");
+        if(getVotacaoByIdPautaUsoValidacaoInserirVotacao(votacao.getIdPauta()).isPresent()){
+            throw new APIException(APIExceptionEnum.JaExisteVotacao);
         }
 
         pautaService.getPautaById(votacao.getIdPauta());
+
         VotacaoEntity ve = new VotacaoEntity();
         ve.setDataAbertura(LocalDateTime.now());
         ve.setDuracaoVotacao(votacao.getDuracaoVotacao());
         ve.setIdPauta(votacao.getIdPauta());
-
-        responseP.setObjeto(new VotacaoDTO(rep.save(ve)));
-        responseP.setTexto("Votacao criada com sucesso");
-        return responseP;
+        votacaoRepository.save(ve);
+        VotacaoDTO dto = new VotacaoDTO(ve.getId(),ve.getIdPauta(),ve.getDuracaoVotacao(),ve.getDataAbertura());
+        //responseP.setObjeto(new VotacaoDTO(rep.save(ve)));
+        responsePadrao.setObjeto(dto);
+        responsePadrao.setTexto("Votacao criada com sucesso");
+        return responsePadrao;
     }
 
-    private Optional<VotacaoEntity> getVotacaoByIdPauta(long idPauta){
-        return rep.findByIdPauta(idPauta);
+    public Optional<VotacaoEntity> getVotacaoByIdPautaUsoValidacaoInserirVotacao(long idPauta){
+        return votacaoRepository.findByIdPauta(idPauta);
     }
 
-    public Long getDuracaoVotacao(long id) {
-        Optional<VotacaoEntity> findById = rep.findById(id);
+    public Long getDuracaoVotacaoUsoValidacaoInserirVoto(long id) {
+        Optional<VotacaoEntity> findById = votacaoRepository.findById(id);
         return findById.get().getDuracaoVotacao();
     }
 
-    public LocalDateTime getDataAbertura(long id) {
-        Optional<VotacaoEntity> findById = rep.findById(id);
+    public LocalDateTime getDataAberturaUsoValidacaoInserirVoto(long id) {
+        Optional<VotacaoEntity> findById = votacaoRepository.findById(id);
         return findById.get().getDataAbertura();
     }
 

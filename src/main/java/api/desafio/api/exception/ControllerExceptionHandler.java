@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
+@ControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler({InvalidFormatException.class})
     public ResponseEntity<StandardError> campoFormatoInvalido(HttpServletRequest request){
@@ -57,6 +58,12 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> CPFInvalidoException(CPFInvalidoException e, HttpServletRequest request){
         var error = new StandardError(LocalDateTime.now(), HttpStatus.CONFLICT.value(), "CPF invalido", e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+    @ExceptionHandler(APIException.class)
+    public ResponseEntity<StandardError> APIException(APIException e, HttpServletRequest request){
+        var error = new StandardError(LocalDateTime.now(), e.apiExceptionEnum.getStatus().value(), e.apiExceptionEnum.getErro(), e.getMessage());
+        return ResponseEntity.status(e.apiExceptionEnum.getStatus()).body(error);
+
     }
 }
 

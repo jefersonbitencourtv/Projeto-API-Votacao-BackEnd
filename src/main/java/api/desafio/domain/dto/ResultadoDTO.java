@@ -23,8 +23,16 @@ public class ResultadoDTO {
         this.qtdNao = r.getQtdNao();
     }
 
+    public void setIdPauta(long idPauta) {
+        this.idPauta = idPauta;
+    }
+
+    public long getIdPauta() {
+        return idPauta;
+    }
+
     public ResultadoEntity ResultadoEntity(){
-        return new ResultadoEntity(id, idVotacao, idPauta, qtdSim, qtdNao);
+        return new ResultadoEntity(getId(), getIdVotacao(), getIdPauta(), getQtdSim(), getQtdNao());
     }
 }
 

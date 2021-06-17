@@ -5,48 +5,58 @@ import api.desafio.domain.entities.PautaEntity;
 import api.desafio.domain.repository.PautaRepository;
 import api.desafio.domain.request.PautaRequest;
 import api.desafio.domain.response.ResponsePadrao;
-import api.desafio.exception.CampoInvalidoException;
-import api.desafio.exception.ObjetoNaoEncontradoException;
+import api.desafio.exception.APIException;
+import api.desafio.exception.APIExceptionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class PautaService {
     @Autowired
-    private PautaRepository rep;
+    private PautaRepository pautaRepository;
 
-    private ResponsePadrao responseP = new ResponsePadrao();
 
     public ResponsePadrao getPauta() {
-        responseP.setListaObjeto(rep.findAll().stream().map(p -> new PautaDTO(p)).collect(Collectors.toList()));
-        return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+        responsePadrao.setListaObjeto(pautaRepository.findAll()
+                .stream()
+                .map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
+                .collect(Collectors.toList()));
+        return responsePadrao;
     }
 
     public ResponsePadrao getPautaById(Long id) {
-        responseP.setObjeto(rep.findById(id).map(p -> new PautaDTO(p)).orElseThrow(() ->
-                new ObjetoNaoEncontradoException("Pauta não encontrada")));
-        return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+        responsePadrao.setObjeto(pautaRepository.findById(id)
+                .map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
+                .orElseThrow(() ->
+                new APIException(APIExceptionEnum.PautaNaoEncontrada)));
+        return responsePadrao;
     }
 
-    public ResponsePadrao save(PautaRequest pauta){
+    public ResponsePadrao inserirPauta(PautaRequest pauta){
+        ResponsePadrao responsePadrao = new ResponsePadrao();
         if(pauta.getDescricao() == null ||pauta.getDescricao().isEmpty()){
-            throw new CampoInvalidoException("Campo DESCRICAO deve ser preenchido");
+            throw new APIException(APIExceptionEnum.DescricaoDeveSerPreenchido);
         }
 
         if(pauta.getTitulo() == null ||pauta.getTitulo().isEmpty()){
-            throw new CampoInvalidoException("Campo TITULO deve ser preenchido");
+            throw new APIException(APIExceptionEnum.TituloDeveSerPreenchido);
         }
 
         PautaEntity pEntity = new PautaEntity();
-
         pEntity.setDescricao(pauta.getDescricao());
         pEntity.setTitulo(pauta.getTitulo());
-        responseP.setTexto("Pauta criada");
-        responseP.setObjeto(new PautaDTO(rep.save(pEntity)));
+        pautaRepository.save((pEntity));
 
-        return responseP;
+        PautaDTO Dto = new PautaDTO(pEntity.getId(),pEntity.getTitulo(),pEntity.getDescricao());
+        responsePadrao.setTexto("Pauta criada");
+        responsePadrao.setObjeto(Dto);
+        //responsePadrao.setObjeto(new PautaDTO(rep.save(pEntity)));
+
+        return responsePadrao;
+
     }
 }

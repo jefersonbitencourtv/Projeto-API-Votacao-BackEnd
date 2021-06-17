@@ -5,21 +5,17 @@ import api.desafio.domain.entities.VotarEntity;
 import api.desafio.domain.repository.VotoRepository;
 import api.desafio.domain.request.VotarRequest;
 import api.desafio.domain.response.ResponsePadrao;
-import api.desafio.exception.AssociadoJaVotouException;
-import api.desafio.exception.CampoInvalidoException;
-import api.desafio.exception.ObjetoNaoEncontradoException;
-import api.desafio.exception.VotacaoExpiradaException;
+import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
 public class VotoService {
     @Autowired
-    private VotoRepository rep;
+    private VotoRepository votoRepository;
     @Autowired
     private VotacaoService serviceVotacao;
     @Autowired
@@ -27,37 +23,41 @@ public class VotoService {
     @Autowired
     private AssociadoService serviceAssociado;
 
-    private ResponsePadrao responseP = new ResponsePadrao();
+
     public ResponsePadrao getVoto(){
-        responseP.setListaObjeto(rep.findAll().stream()
-                .map(v->new VotarDTO(v)).collect(Collectors.toList()));
-        return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+        responsePadrao.setListaObjeto(votoRepository.findAll().stream()
+                .map(v->new VotarDTO(v.getId(),v.getIdAssociado(),v.getIdVotacao(),v.getVoto()))
+                .collect(Collectors.toList()));
+        return responsePadrao;
     }
 
     public ResponsePadrao getVotoById(long id){
-
-        responseP.setObjeto(
-                rep.findById(id).map(v->new VotarDTO(v)).orElseThrow(()
-                        ->new ObjetoNaoEncontradoException("Voto não encontrado")));
-        return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+        responsePadrao.setObjeto(
+                votoRepository.findById(id)
+                        .map(v->new VotarDTO(v.getId(),v.getIdAssociado(),v.getIdVotacao(),v.getVoto()))
+                        .orElseThrow(() ->new APIException(APIExceptionEnum.VotoNaoEncontrado)));
+        return responsePadrao;
     }
 
-    public ResponsePadrao save(VotarRequest voto){
+    public ResponsePadrao inserirVoto(VotarRequest voto){
+        ResponsePadrao responsePadrao = new ResponsePadrao();
         if(voto.getIdVotacao() == null){
-            throw new CampoInvalidoException("Votacação deve ser fornecida");
+            throw new APIException(APIExceptionEnum.VotacaoDeveSerFornecida);
         }
         if(voto.getIdAssociado() == null){
-            throw new CampoInvalidoException("Associado deve ser fornecido");
+            throw new APIException(APIExceptionEnum.AssociadoDeveSerFornecido);
         }
         if(voto.getVoto() == null || voto.getVoto().isEmpty()){
-            throw new CampoInvalidoException("Voto deve ser fornecido");
+            throw new APIException(APIExceptionEnum.VotoDeveSerFornecido);
         }
 
         voto.setVoto(voto.getVoto().toUpperCase());
         if(!(voto.getVoto().equals("SIM") ||
                 voto.getVoto().equals("NÃO") ||
                 voto.getVoto().equals("NAO"))){
-            throw new CampoInvalidoException("Voto deve ser apenas sim ou não");
+            throw new APIException(APIExceptionEnum.VotoDeveSerSimOuNao);
         }
         if(voto.getVoto().equals("NÃO")){
             voto.setVoto(voto.getVoto().replaceAll("NÃO", "NAO"));
@@ -65,23 +65,25 @@ public class VotoService {
         serviceVotacao.getVotacaoById(voto.getIdVotacao());
         serviceAssociado.getAssociadoById(voto.getIdAssociado());
 
-        if (rep.findByIdAssociadoAndIdVotacao(voto.getIdAssociado(), voto.getIdVotacao()).isPresent()) {
-            throw new AssociadoJaVotouException("Associado já votou");
+        if (votoRepository.findByIdAssociadoAndIdVotacao(voto.getIdAssociado(), voto.getIdVotacao()).isPresent()) {
+            throw new APIException(APIExceptionEnum.AssociadoJaVotou);
         }
-        if (LocalDateTime.now().isAfter(serviceVotacao.getDataAbertura(voto.getIdVotacao()).plusMinutes(serviceVotacao.getDuracaoVotacao(voto.getIdVotacao())))){
-           throw new VotacaoExpiradaException("Essa votação não está mais disponivel");
+        if (LocalDateTime.now().isAfter(serviceVotacao.getDataAberturaUsoValidacaoInserirVoto(voto.getIdVotacao()).plusMinutes(serviceVotacao.getDuracaoVotacaoUsoValidacaoInserirVoto(voto.getIdVotacao())))){
+           throw new APIException(APIExceptionEnum.VotacaoNaoEstaDisponivel);
         }
 
-        serviceResultado.updateVoto(voto.getVoto().toUpperCase(), voto.getIdVotacao());
+        serviceResultado.inserirVotoNoResultado(voto.getVoto().toUpperCase(), voto.getIdVotacao());
 
         VotarEntity ve = new VotarEntity();
         ve.setVoto(voto.getVoto());
         ve.setIdAssociado(voto.getIdAssociado());
         ve.setIdVotacao(voto.getIdVotacao());
-
-        responseP.setObjeto(new VotarDTO(rep.save(ve)));
-        responseP.setTexto("Voto criado com sucesso");
-        return responseP;
+        votoRepository.save(ve);
+        VotarDTO dto = new VotarDTO(ve.getId(),ve.getIdAssociado(),ve.getIdVotacao(),ve.getVoto());
+        //responseP.setObjeto(new VotarDTO(rep.save(ve)));
+        responsePadrao.setObjeto(dto);
+        responsePadrao.setTexto("Voto criado com sucesso");
+        return responsePadrao;
 
     }
 }

@@ -26,7 +26,7 @@ public class AssociadoController {
 
     @PostMapping
     public ResponseEntity<ResponsePadrao> postAssociado(@RequestBody AssociadoRequest associado){
-            return ResponseEntity.ok(service.save(associado));
+            return ResponseEntity.ok(service.inserirAssociado(associado));
 
     }
 }

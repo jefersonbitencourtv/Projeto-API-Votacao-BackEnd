@@ -27,7 +27,7 @@ public class VotoController {
 
     @PostMapping
     public ResponseEntity<ResponsePadrao> postVoto(@RequestBody VotarRequest voto) {
-        return ResponseEntity.ok(service.save(voto));
+        return ResponseEntity.ok(service.inserirVoto(voto));
 
     }
 }

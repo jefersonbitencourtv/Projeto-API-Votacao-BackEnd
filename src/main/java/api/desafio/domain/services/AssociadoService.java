@@ -6,9 +6,7 @@ import api.desafio.domain.repository.AssociadoRepository;
 import api.desafio.domain.request.AssociadoRequest;
 import api.desafio.domain.response.ResponsePadrao;
 import api.desafio.domain.utils.ValidadorCPF;
-import api.desafio.exception.CPFInvalidoException;
-import api.desafio.exception.CampoInvalidoException;
-import api.desafio.exception.ObjetoNaoEncontradoException;
+import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,50 +15,63 @@ import java.util.stream.Collectors;
 @Service
 public class AssociadoService {
     @Autowired
-    private AssociadoRepository rep;
+    private AssociadoRepository associadoRepository;
 
-
-
-    private ResponsePadrao responseP = new ResponsePadrao();
 
     public ResponsePadrao getAssociado(){
-        responseP.setListaObjeto(rep.findAll().stream().map(a -> new AssociadoDTO(a)).collect(Collectors.toList()));
-        //return rep.findAll().stream().map(a -> new AssociadoDTO(a)).collect(Collectors.toList());
-        return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+         responsePadrao.setListaObjeto(associadoRepository.findAll().stream().map(a ->
+                new AssociadoDTO(a.getCpf(),a.getId()))
+                .collect(Collectors.toList()));
+
+        return responsePadrao;
     }
 
     public ResponsePadrao getAssociadoById(Long id){
-        responseP.setObjeto(rep.findById(id).map(a -> new AssociadoDTO(a)).orElseThrow(()
-        -> new ObjetoNaoEncontradoException("Associado não encontrado")));
-         return responseP;
+        ResponsePadrao responsePadrao = new ResponsePadrao();
+        responsePadrao.setObjeto(associadoRepository.findById(id)
+                .map(a -> new AssociadoDTO(a.getCpf(),a.getId()))
+                .orElseThrow(()-> new APIException(APIExceptionEnum.AssociadoNaoEncontrado)));
+        return responsePadrao;
     }
 
-    public ResponsePadrao save(AssociadoRequest associado){
+    public ResponsePadrao inserirAssociado(AssociadoRequest associado){
+        ResponsePadrao responsePadrao = new ResponsePadrao();
         if(associado.getCpf() == null ||associado.getCpf().isEmpty()){
-            throw new CampoInvalidoException("Campo CPF deve ser preenchido");
+            throw new APIException(APIExceptionEnum.CpfDeveSerPreenchido);
         }
         /*
         if(associado.getCpf().matches("[A-Z]*[a-z]*")){
            throw new CampoInvalidoException("Campo CPF deve conter apenas números");
         }*/
         if(!(associado.getCpf().matches("[0-9]*"))){
-            throw new CampoInvalidoException("Campo CPF deve conter apenas números");
+            throw new APIException(APIExceptionEnum.CpfDeveConterApenasNumeros);
         }
         if(associado.getCpf().length() != 11){
-            throw new CampoInvalidoException("CPF deve conter 11 números");
+            throw new APIException(APIExceptionEnum.CpfDeveConter11Numeros);
         }
-        if(ValidadorCPF.isValidCPF(associado.getCpf()) == false){
+        /*if(ValidadorCPF.isValidCPF(associado.getCpf()) == false) {
             throw new CPFInvalidoException("CPF inválido");
+        }*/
+        if(ValidadorCPF.isValidCPF(associado.getCpf()) == false) {
+            throw new APIException(APIExceptionEnum.CPFInvalido);
         }
-
-
+        if(associadoRepository.findByCpf(associado.getCpf()).isPresent()){
+            throw new APIException(APIExceptionEnum.CpfJáExisteAssociado);
+        }
 
 
         AssociadoEntity aEntity = new AssociadoEntity();
         aEntity.setCpf(associado.getCpf());
-        responseP.setTexto("Associado cadastrado");
-        responseP.setObjeto(new AssociadoDTO(rep.save(aEntity)));
 
-        return responseP;
+        //AssociadoDTO ab = new AssociadoDTO(aEntity.getCpf() , aEntity.getId());
+
+        associadoRepository.save(aEntity);
+        AssociadoDTO ab = new AssociadoDTO(aEntity.getCpf() , aEntity.getId());
+        responsePadrao.setTexto("Associado cadastrado");
+        responsePadrao.setObjeto(ab);
+        //responseP.setObjeto(new AssociadoDTO(rep.save(aEntity)));
+
+        return responsePadrao;
     }
 }
