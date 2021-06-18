@@ -37,10 +37,10 @@ public class VotacaoServiceTests {
     private VotacaoService serviceVotacao;
     @Mock
     private PautaService servicePauta;
-    public LocalDateTime DataAbertura = LocalDateTime.of(2018, 07, 22, 10, 15, 30);
+
     @Test
-    public void inserirVotacao() {
-        LocalDateTime DataAbertura = LocalDateTime.of(2018, 07, 22, 10, 15, 30);
+    public void testInserirVotacao() {
+        LocalDateTime DataAbertura = LocalDateTime.now();
         //Objeto da pauta
         PautaEntity pautaEntity = new PautaEntity();
         pautaEntity.setTitulo("aa");
@@ -56,10 +56,10 @@ public class VotacaoServiceTests {
         Mockito.when(servicePauta.getPautaById(1L)).thenReturn(responsePadraoPauta);
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
         VotacaoDTO dto = new VotacaoDTO(1L,1L, 2000L, DataAbertura);
-        responsePadrao1.setObjeto(dto);
-        responsePadrao1.setTexto("Votacao criada com sucesso");
+        responsePadraoTeste.setObjeto(dto);
+        responsePadraoTeste.setTexto("Votacao criada com sucesso");
 
         //Objeto da service
         VotacaoEntity votacaoEntity = new VotacaoEntity();
@@ -69,12 +69,12 @@ public class VotacaoServiceTests {
         votacaoEntity.setDataAbertura(DataAbertura);
         Mockito.when(votacaoRepository.save(Mockito.any())).thenReturn(votacaoEntity);
 
-        ResponsePadrao responsePadrao;
+        ResponsePadrao responsePadraoService;
         VotacaoRequest request = new VotacaoRequest();
         request.setIdPauta(1L);
         request.setDuracaoVotacao(2000L);
-        responsePadrao = serviceVotacao.inserirVotacao(request);
-        Assert.assertEquals(responsePadrao,responsePadrao1);
+        responsePadraoService = serviceVotacao.inserirVotacao(request);
+        Assert.assertEquals(responsePadraoService,responsePadraoTeste);
     }
     @Test(expected = APIException.class)
     public void testIDPautaDeveSerFornecido(){
@@ -100,16 +100,16 @@ public class VotacaoServiceTests {
 
         //Objeto da service
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
         votacaoEntity.setDataAbertura(LocalDateTime.now());
-        Mockito.when(votacaoRepository.findByIdPauta(0L)).thenReturn(Optional.of(votacaoEntity));
-        serviceVotacao.getVotacaoByIdUsoValidacaoInsercaoResultado(0L);
+        Mockito.when(votacaoRepository.findByIdPauta(1L)).thenReturn(Optional.of(votacaoEntity));
+        serviceVotacao.getVotacaoByIdUsoValidacaoInsercaoResultado(1L);
 
         //Objeto para teste
         VotacaoRequest request = new VotacaoRequest();
-        request.setIdPauta(0L);
+        request.setIdPauta(1L);
         request.setDuracaoVotacao(2000L);
 
 
@@ -117,127 +117,125 @@ public class VotacaoServiceTests {
     }
     @Test
     public void testGetVotacao(){
-        LocalDateTime tempo = LocalDateTime.now();
+        LocalDateTime dataAbertura = LocalDateTime.now();
         //Objeto do banco
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
-        votacaoEntity.setDataAbertura(tempo);
+        votacaoEntity.setDataAbertura(dataAbertura);
 
-        List<VotacaoEntity> lista = new ArrayList<>();
-        lista.add(votacaoEntity);
-        Mockito.when(votacaoRepository.findAll()).thenReturn(lista);
-        ResponsePadrao responsePadrao;
-        responsePadrao = serviceVotacao.getVotacao();
+        List<VotacaoEntity> votacaoEntityList = new ArrayList<>();
+        votacaoEntityList.add(votacaoEntity);
+        Mockito.when(votacaoRepository.findAll()).thenReturn(votacaoEntityList);
+        ResponsePadrao responsePadraoService;
+        responsePadraoService = serviceVotacao.getVotacao();
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        VotacaoDTO dto = new VotacaoDTO(0L,0L,2000L,tempo);
-        List<VotacaoDTO> lista1 = new ArrayList<>();
-        lista1.add(dto);
-        responsePadrao1.setListaObjeto(Arrays.asList(lista1.toArray()));
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        VotacaoDTO votacaoDTO = new VotacaoDTO(1L,1L,2000L,dataAbertura);
+        List<VotacaoDTO> listaVotacaoDTO = new ArrayList<>();
+        listaVotacaoDTO.add(votacaoDTO);
+        responsePadraoTeste.setListaObjeto(Arrays.asList(listaVotacaoDTO.toArray()));
 
-        Assert.assertEquals(responsePadrao, responsePadrao1);
+        Assert.assertEquals(responsePadraoService, responsePadraoTeste);
     }
 
     @Test
     public void testGetVotacaoById(){
-        LocalDateTime tempo = LocalDateTime.now();
+        LocalDateTime dataAbertura = LocalDateTime.now();
         //Objeto do banco
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
-        votacaoEntity.setDataAbertura(tempo);
+        votacaoEntity.setDataAbertura(dataAbertura);
 
-        Mockito.when(votacaoRepository.findById(0L)).thenReturn(Optional.of(votacaoEntity));
-        ResponsePadrao responsePadrao;
-        responsePadrao = serviceVotacao.getVotacaoById(0L);
+        Mockito.when(votacaoRepository.findById(1L)).thenReturn(Optional.of(votacaoEntity));
+        ResponsePadrao responsePadraoService;
+        responsePadraoService = serviceVotacao.getVotacaoById(1L);
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        VotacaoDTO votacaoDTO = new VotacaoDTO(0L,0L,2000L,tempo);
-        responsePadrao1.setObjeto(votacaoDTO);
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        VotacaoDTO votacaoDTO = new VotacaoDTO(1L,1L,2000L,dataAbertura);
+        responsePadraoTeste.setObjeto(votacaoDTO);
 
-        Assert.assertEquals(responsePadrao, responsePadrao1);
+        Assert.assertEquals(responsePadraoService, responsePadraoTeste);
 
     }
 
     @Test
     public void testGetVotacaoByIdUsoValidacaoInsercaoResultado(){
-        LocalDateTime tempo = LocalDateTime.now();
+        LocalDateTime dataAbertura = LocalDateTime.now();
         //Objeto do banco
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
-        votacaoEntity.setDataAbertura(tempo);
+        votacaoEntity.setDataAbertura(dataAbertura);
 
-        Mockito.when(votacaoRepository.findById(0L)).thenReturn(Optional.of(votacaoEntity));
-        Optional<VotacaoDTO> optionalVotacao= serviceVotacao.getVotacaoByIdUsoValidacaoInsercaoResultado(0L);
+        Mockito.when(votacaoRepository.findById(1L)).thenReturn(Optional.of(votacaoEntity));
+        Optional<VotacaoDTO> optionalVotacaoDTOService= serviceVotacao.getVotacaoByIdUsoValidacaoInsercaoResultado(1L);
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        Optional<VotacaoDTO> votacaoDTO = Optional.of(new VotacaoDTO(0L, 0L, 2000L, tempo));
+        Optional<VotacaoDTO> OptionalVotacaoDTOTeste = Optional.of(new VotacaoDTO(1L, 1L, 2000L, dataAbertura));
 
-        Assert.assertEquals(optionalVotacao, votacaoDTO);
+        Assert.assertEquals(optionalVotacaoDTOService, OptionalVotacaoDTOTeste);
 
     }
     @Test
     public void testGetVotacaoByIdPautaUsoValidacaoInserirVotacao(){
-        LocalDateTime tempo = LocalDateTime.now();
+        LocalDateTime dataAbertura = LocalDateTime.now();
         //Objeto do banco
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
-        votacaoEntity.setDataAbertura(tempo);
+        votacaoEntity.setDataAbertura(dataAbertura);
 
-        Mockito.when(votacaoRepository.findByIdPauta(0L)).thenReturn(Optional.of(votacaoEntity));
-        Optional<VotacaoEntity> optionalVotacao= serviceVotacao.getVotacaoByIdPautaUsoValidacaoInserirVotacao(0L);
+        Mockito.when(votacaoRepository.findByIdPauta(1L)).thenReturn(Optional.of(votacaoEntity));
+        Optional<VotacaoEntity> optionalVotacaoEntityService= serviceVotacao.getVotacaoByIdPautaUsoValidacaoInserirVotacao(1L);
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        Optional<VotacaoEntity> votacaoEntity2 = Optional.of(new VotacaoEntity(0L, 0L, 2000L, tempo));
+        Optional<VotacaoEntity> OptionalVotacaoEntityTeste = Optional.of(new VotacaoEntity(1L, 1L, 2000L, dataAbertura));
 
-        Assert.assertEquals(optionalVotacao, votacaoEntity2);
+        Assert.assertEquals(optionalVotacaoEntityService, OptionalVotacaoEntityTeste);
 
     }
     @Test
     public void testGetDuracaoVotacaoUsoValidacaoInserirVoto(){
-        LocalDateTime tempo = LocalDateTime.now();
+        LocalDateTime dataAbertura = LocalDateTime.now();
         //Objeto do banco
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
-        votacaoEntity.setDataAbertura(tempo);
-        Mockito.when(votacaoRepository.findById(0L)).thenReturn(Optional.of(votacaoEntity));
-        Long tempo2 = serviceVotacao.getDuracaoVotacaoUsoValidacaoInserirVoto(0L);
+        votacaoEntity.setDataAbertura(dataAbertura);
+        Mockito.when(votacaoRepository.findById(1L)).thenReturn(Optional.of(votacaoEntity));
+        Long duracaoVotacaoService = serviceVotacao.getDuracaoVotacaoUsoValidacaoInserirVoto(1L);
 
         //Objeto para teste
-        VotacaoEntity votacaoEntity2 = new VotacaoEntity(0L, 0L, 2000L, tempo);
+        VotacaoEntity votacaoEntityTeste = new VotacaoEntity(1L, 1L, 2000L, dataAbertura);
 
-        Assert.assertEquals(tempo2, votacaoEntity2.getDuracaoVotacao());
+        Assert.assertEquals(duracaoVotacaoService, votacaoEntityTeste.getDuracaoVotacao());
     }
 
     @Test
     public void testGetDataAberturaUsoValidacaoInserirVoto(){
-        LocalDateTime tempo = LocalDateTime.now();
+        LocalDateTime dataAbertura = LocalDateTime.now();
         //Objeto do banco
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
-        votacaoEntity.setDataAbertura(tempo);
-        Mockito.when(votacaoRepository.findById(0L)).thenReturn(Optional.of(votacaoEntity));
-        LocalDateTime tempo2 = serviceVotacao.getDataAberturaUsoValidacaoInserirVoto(0L);
+        votacaoEntity.setDataAbertura(dataAbertura);
+        Mockito.when(votacaoRepository.findById(1L)).thenReturn(Optional.of(votacaoEntity));
+        LocalDateTime dataAberturaService = serviceVotacao.getDataAberturaUsoValidacaoInserirVoto(1L);
 
         //Objeto para teste
-        VotacaoEntity votacaoEntity2 = new VotacaoEntity(0L, 0L, 2000L, tempo);
+        VotacaoEntity VotacaoEntityTeste = new VotacaoEntity(1L, 1L, 2000L, dataAbertura);
 
-        Assert.assertEquals(tempo2, votacaoEntity2.getDataAbertura());
+        Assert.assertEquals(dataAberturaService, VotacaoEntityTeste.getDataAbertura());
     }
 
 }

@@ -36,25 +36,32 @@ public class PautaServiceTests {
     private PautaService service;
 
     @Test
-    public void inserirPauta() {
+    public void testInserirPauta() {
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        PautaDTO dto = new PautaDTO(0L,"aa","bb");
-        responsePadrao1.setObjeto(dto);
-        responsePadrao1.setTexto("Pauta criada");
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        PautaDTO dto = new PautaDTO(15L,"aa","bb");
+        responsePadraoTeste.setObjeto(dto);
+        responsePadraoTeste.setTexto("Pauta criada");
 
         //Objeto da service
-        PautaEntity pautaEntity = new PautaEntity();
-        pautaEntity.setTitulo("aa");
-        pautaEntity.setDescricao("bb");
-        Mockito.when(repositorio.save(pautaEntity)).thenReturn(pautaEntity);
-        ResponsePadrao responsePadrao;
-        PautaRequest request = new PautaRequest();
-        request.setTitulo("aa");
-        request.setDescricao("bb");
-        responsePadrao = service.inserirPauta(request);
+        PautaEntity pautaEntityEntrada = new PautaEntity();
+        pautaEntityEntrada.setTitulo("aa");
+        pautaEntityEntrada.setDescricao("bb");
 
-        Assert.assertEquals(responsePadrao,responsePadrao1);
+        PautaEntity pautaEntityRetorno = new PautaEntity();
+        pautaEntityRetorno.setTitulo("aa");
+        pautaEntityRetorno.setDescricao("bb");
+        pautaEntityRetorno.setId(15L);
+
+        Mockito.when(repositorio.save(pautaEntityEntrada)).thenReturn(pautaEntityRetorno);
+
+        ResponsePadrao responsePadraoService;
+        PautaRequest pautaRequest = new PautaRequest();
+        pautaRequest.setTitulo("aa");
+        pautaRequest.setDescricao("bb");
+        responsePadraoService = service.inserirPauta(pautaRequest);
+
+        Assert.assertEquals(responsePadraoService,responsePadraoTeste);
     }
     @Test
     public void testGetPauta(){
@@ -62,21 +69,23 @@ public class PautaServiceTests {
         PautaEntity pautaEntity = new PautaEntity();
         pautaEntity.setTitulo("aa");
         pautaEntity.setDescricao("bb");
-        pautaEntity.setId(0L);
-        List<PautaEntity> lista = new ArrayList<>();
-        lista.add(pautaEntity);
-        Mockito.when(repositorio.findAll()).thenReturn(lista);
-        ResponsePadrao responsePadrao;
-        responsePadrao = service.getPauta();
+        pautaEntity.setId(15L);
+
+        List<PautaEntity> listaPautaEntity = new ArrayList<>();
+        listaPautaEntity.add(pautaEntity);
+
+        Mockito.when(repositorio.findAll()).thenReturn(listaPautaEntity);
+        ResponsePadrao responsePadraoService;
+        responsePadraoService = service.getPauta();
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        PautaDTO dto = new PautaDTO(0L,"aa","bb");
-        List<PautaDTO> lista1 = new ArrayList<>();
-        lista1.add(dto);
-        responsePadrao1.setListaObjeto(Arrays.asList(lista1.toArray()));
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        PautaDTO pautaDTO = new PautaDTO(15L,"aa","bb");
+        List<PautaDTO> listaPautaDTO = new ArrayList<>();
+        listaPautaDTO.add(pautaDTO);
+        responsePadraoTeste.setListaObjeto(Arrays.asList(listaPautaDTO.toArray()));
 
-        Assert.assertEquals(responsePadrao, responsePadrao1);
+        Assert.assertEquals(responsePadraoService, responsePadraoTeste);
 
     }
     @Test
@@ -85,34 +94,34 @@ public class PautaServiceTests {
         PautaEntity pautaEntity = new PautaEntity();
         pautaEntity.setTitulo("aa");
         pautaEntity.setDescricao("bb");
-        pautaEntity.setId(0L);
-        Mockito.when(repositorio.findById(0L)).thenReturn(Optional.of(pautaEntity));
+        pautaEntity.setId(15L);
+        Mockito.when(repositorio.findById(15L)).thenReturn(Optional.of(pautaEntity));
 
-        ResponsePadrao responsePadrao;
-        responsePadrao = service.getPautaById(0L);
+        ResponsePadrao responsePadraoService;
+        responsePadraoService = service.getPautaById(15L);
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        PautaDTO pautaDTO = new PautaDTO(0L,"aa","bb");
-        responsePadrao1.setObjeto(pautaDTO);
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        PautaDTO pautaDTO = new PautaDTO(15L,"aa","bb");
+        responsePadraoTeste.setObjeto(pautaDTO);
 
-        Assert.assertEquals(responsePadrao, responsePadrao1);
+        Assert.assertEquals(responsePadraoService, responsePadraoTeste);
 
     }
     @Test(expected = APIException.class)
     public void testTituloDeveSerPreenchido(){
-        PautaRequest request = new PautaRequest();
-        request.setDescricao("aa");
-        request.setTitulo("");
-        Mockito.when(service.inserirPauta(request)).thenThrow(APIException.class);
+        PautaRequest pautaRequest = new PautaRequest();
+        pautaRequest.setDescricao("aa");
+        pautaRequest.setTitulo("");
+        Mockito.when(service.inserirPauta(pautaRequest)).thenThrow(APIException.class);
 
     }
     @Test(expected = APIException.class)
     public void testDescricaoDeveSerPreenchido(){
-        PautaRequest request = new PautaRequest();
-        request.setTitulo("aa");
-        request.setDescricao("");
-        Mockito.when(service.inserirPauta(request)).thenThrow(APIException.class);
+        PautaRequest pautaRequest = new PautaRequest();
+        pautaRequest.setTitulo("aa");
+        pautaRequest.setDescricao("");
+        Mockito.when(service.inserirPauta(pautaRequest)).thenThrow(APIException.class);
 
     }
 

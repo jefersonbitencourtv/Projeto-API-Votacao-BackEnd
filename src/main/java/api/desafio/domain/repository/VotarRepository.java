@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface VotoRepository extends JpaRepository<VotarEntity,Long> {
+public interface VotarRepository extends JpaRepository<VotarEntity,Long> {
     default VotarEntity insert(VotarEntity votacao){
         return null;
     }

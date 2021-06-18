@@ -37,131 +37,138 @@ public class ResultadoServiceTests {
     @InjectMocks
     public ResultadoService resultadoService;
     @Test
-    public void inserirVotoNoResultadoElseAndIF(){
+    public void testInserirVotoNoResultadoElseAndIF(){
         LocalDateTime DataAbertura = LocalDateTime.now();
+        //Cria objeto de votação
         VotacaoEntity votacaoEntity = new VotacaoEntity();
-        votacaoEntity.setId(0L);
-        votacaoEntity.setIdPauta(0L);
+        votacaoEntity.setId(1L);
+        votacaoEntity.setIdPauta(1L);
         votacaoEntity.setDuracaoVotacao(2000L);
         votacaoEntity.setDataAbertura(DataAbertura);
-        ResultadoDTO dto1 = new ResultadoDTO();
-        ResultadoEntity rent = new ResultadoEntity();
-        //Teste do if
-        Mockito.when(resultadoRepositorio.findByIdVotacao(0)).thenReturn(Optional.of(rent));
-        //Teste do else
-        Mockito.when(votacaoRepositorio.findByIdPauta(0L)).thenReturn(Optional.of(votacaoEntity));
+
+        //Objeto da service, validação
+        ResultadoEntity resultadoEntity = new ResultadoEntity();
+        //Teste do if se já há resultado para a votação
+        Mockito.when(resultadoRepositorio.findByIdVotacao(1)).thenReturn(Optional.of(resultadoEntity));
+        //Teste do else se existe votação para a pauta
+        Mockito.when(votacaoRepositorio.findByIdPauta(1L)).thenReturn(Optional.of(votacaoEntity));
         VotacaoDTO votacaoDTO = new VotacaoDTO();
         votacaoDTO.setDuracaoVotacao(2000L);
-        votacaoDTO.setId(0L);
-        votacaoDTO.setIdPauta(0L);
+        votacaoDTO.setId(1L);
+        votacaoDTO.setIdPauta(1L);
         votacaoDTO.setDataAbertura(DataAbertura);
-        Mockito.when(votacaoService.getVotacaoByIdUsoValidacaoInsercaoResultado(0L)).thenReturn(Optional.of(votacaoDTO));
+        Mockito.when(votacaoService.getVotacaoByIdUsoValidacaoInsercaoResultado(1L)).thenReturn(Optional.of(votacaoDTO));
 
         //Objeto da service
-        ResultadoEntity resultadoEntity = new ResultadoEntity();
-        resultadoEntity.setId(0L);
-        resultadoEntity.setIdVotacao(0L);
-        resultadoEntity.setIdPauta(0L);
-        resultadoEntity.setQtdSim(0);
-        resultadoEntity.setQtdNao(0);
-        Mockito.when(resultadoRepositorio.save(resultadoEntity)).thenReturn(resultadoEntity);
-        resultadoService.inserirVotoNoResultado("sim",0L);
+        ResultadoEntity resultadoEntityEntrada = new ResultadoEntity();
+        resultadoEntityEntrada.setIdVotacao(1L);
+        resultadoEntityEntrada.setIdPauta(1L);
+        resultadoEntityEntrada.setQtdSim(1);
+        resultadoEntityEntrada.setQtdNao(1);
+
+        ResultadoEntity resultadoEntityRetorno = new ResultadoEntity();
+        resultadoEntityRetorno.setId(1L);
+        resultadoEntityRetorno.setIdVotacao(1L);
+        resultadoEntityRetorno.setIdPauta(1L);
+        resultadoEntityRetorno.setQtdSim(1);
+        resultadoEntityRetorno.setQtdNao(1);
+        Mockito.when(resultadoRepositorio.save(resultadoEntityEntrada)).thenReturn(resultadoEntityRetorno);
+        resultadoService.inserirVotoNoResultado("sim",1L);
 
     }
     @Test
     public void testGetResultadoByIdVotacao(){
         ResultadoEntity resultadoEntity = new ResultadoEntity();
-        resultadoEntity.setId(0L);
-        resultadoEntity.setIdVotacao(0L);
-        resultadoEntity.setIdPauta(0L);
-        resultadoEntity.setQtdSim(0);
-        resultadoEntity.setQtdNao(0);
-        Mockito.when(resultadoRepositorio.findByIdVotacao(0L)).thenReturn(Optional.of(resultadoEntity));
+        resultadoEntity.setId(1L);
+        resultadoEntity.setIdVotacao(1L);
+        resultadoEntity.setIdPauta(1L);
+        resultadoEntity.setQtdSim(1);
+        resultadoEntity.setQtdNao(1);
+        Mockito.when(resultadoRepositorio.findByIdVotacao(1L)).thenReturn(Optional.of(resultadoEntity));
 
-        ResponsePadrao responsePadrao = resultadoService.getResultadoByIdVotacao(0L);
+        ResponsePadrao responsePadraoService = resultadoService.getResultadoByIdVotacao(1L);
 
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        //responsePadrao.setObjeto();
-        ResultadoDTO resultadoDTO = new ResultadoDTO(0L,0L,0L,0,0);
-        responsePadrao1.setObjeto(resultadoDTO);
-        Assert.assertEquals(responsePadrao,responsePadrao1);
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        ResultadoDTO resultadoDTO = new ResultadoDTO(1L,1L,1L,1,1);
+        responsePadraoTeste.setObjeto(resultadoDTO);
+        Assert.assertEquals(responsePadraoService,responsePadraoTeste);
     }
     @Test
-    public void getResultadoByIdVotacaoUsoParaTestarInserirResultado(){
+    public void testGetResultadoByIdVotacaoUsoParaTestarInserirResultado(){
         ResultadoEntity resultadoEntity = new ResultadoEntity();
-        resultadoEntity.setId(0L);
-        resultadoEntity.setIdVotacao(0L);
-        resultadoEntity.setIdPauta(0L);
-        resultadoEntity.setQtdSim(0);
-        resultadoEntity.setQtdNao(0);
-        Mockito.when(resultadoRepositorio.findByIdVotacao(0L)).thenReturn(Optional.of(resultadoEntity));
+        resultadoEntity.setId(1L);
+        resultadoEntity.setIdVotacao(1L);
+        resultadoEntity.setIdPauta(1L);
+        resultadoEntity.setQtdSim(1);
+        resultadoEntity.setQtdNao(1);
+        Mockito.when(resultadoRepositorio.findByIdVotacao(1L)).thenReturn(Optional.of(resultadoEntity));
 
-        Optional<ResultadoDTO> resultadoDTO = resultadoService.getResultadoByIdVotacaoUsoParaTestarInserirResultado(0L);
+        Optional<ResultadoDTO> resultadoDTOEntrada = resultadoService.getResultadoByIdVotacaoUsoParaTestarInserirResultado(1L);
 
-        Optional<ResultadoDTO> resultadoDTO1 = Optional.of(new ResultadoDTO(0L, 0L, 0L, 0, 0));
+        Optional<ResultadoDTO> resultadoDTOTeste = Optional.of(new ResultadoDTO(1L, 1L, 1L, 1, 1));
 
-        Assert.assertEquals(resultadoDTO,resultadoDTO1);
+        Assert.assertEquals(resultadoDTOEntrada,resultadoDTOTeste);
     }
 
     @Test
     public void testGetResultadoByIdPauta(){
         ResultadoEntity resultadoEntity = new ResultadoEntity();
-        resultadoEntity.setId(0L);
-        resultadoEntity.setIdVotacao(0L);
-        resultadoEntity.setIdPauta(0L);
-        resultadoEntity.setQtdSim(0);
-        resultadoEntity.setQtdNao(0);
-        Mockito.when(resultadoRepositorio.findByIdPauta(0L)).thenReturn(Optional.of(resultadoEntity));
+        resultadoEntity.setId(1L);
+        resultadoEntity.setIdVotacao(1L);
+        resultadoEntity.setIdPauta(1L);
+        resultadoEntity.setQtdSim(1);
+        resultadoEntity.setQtdNao(1);
+        Mockito.when(resultadoRepositorio.findByIdPauta(1L)).thenReturn(Optional.of(resultadoEntity));
 
-        ResponsePadrao responsePadrao = resultadoService.getResultadoByIdPauta(0L);
+        ResponsePadrao responsePadraoService = resultadoService.getResultadoByIdPauta(1L);
 
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
 
-        ResultadoDTO resultadoDTO = new ResultadoDTO(0L,0L,0L,0,0);
-        responsePadrao1.setObjeto(resultadoDTO);
-        Assert.assertEquals(responsePadrao,responsePadrao1);
+        ResultadoDTO resultadoDTO = new ResultadoDTO(1L,1L,1L,1,1);
+        responsePadraoTeste.setObjeto(resultadoDTO);
+        Assert.assertEquals(responsePadraoService,responsePadraoTeste);
     }
 
     @Test
     public void testGetResultadoById(){
         ResultadoEntity resultadoEntity = new ResultadoEntity();
-        resultadoEntity.setId(0L);
-        resultadoEntity.setIdVotacao(0L);
-        resultadoEntity.setIdPauta(0L);
-        resultadoEntity.setQtdSim(0);
-        resultadoEntity.setQtdNao(0);
-        Mockito.when(resultadoRepositorio.findById(0L)).thenReturn(Optional.of(resultadoEntity));
+        resultadoEntity.setId(1L);
+        resultadoEntity.setIdVotacao(1L);
+        resultadoEntity.setIdPauta(1L);
+        resultadoEntity.setQtdSim(1);
+        resultadoEntity.setQtdNao(1);
+        Mockito.when(resultadoRepositorio.findById(1L)).thenReturn(Optional.of(resultadoEntity));
 
-        ResponsePadrao responsePadrao = resultadoService.getResultadoById(0L);
+        ResponsePadrao responsePadraoService = resultadoService.getResultadoById(1L);
 
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        //responsePadrao.setObjeto();
-        ResultadoDTO resultadoDTO = new ResultadoDTO(0L,0L,0L,0,0);
-        responsePadrao1.setObjeto(resultadoDTO);
-        Assert.assertEquals(responsePadrao,responsePadrao1);
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+
+        ResultadoDTO resultadoDTO = new ResultadoDTO(1L,1L,1L,1,1);
+        responsePadraoTeste.setObjeto(resultadoDTO);
+        Assert.assertEquals(responsePadraoService,responsePadraoTeste);
     }
 
     @Test
     public void testGetResultado(){
         ResultadoEntity resultadoEntity = new ResultadoEntity();
-        resultadoEntity.setId(0L);
-        resultadoEntity.setIdVotacao(0L);
-        resultadoEntity.setIdPauta(0L);
-        resultadoEntity.setQtdSim(0);
-        resultadoEntity.setQtdNao(0);
-        List<ResultadoEntity> lista = new ArrayList<>();
-        lista.add(resultadoEntity);
-        Mockito.when(resultadoRepositorio.findAll()).thenReturn(lista);
+        resultadoEntity.setId(1L);
+        resultadoEntity.setIdVotacao(1L);
+        resultadoEntity.setIdPauta(1L);
+        resultadoEntity.setQtdSim(1);
+        resultadoEntity.setQtdNao(1);
+        List<ResultadoEntity> resultadoEntityList = new ArrayList<>();
+        resultadoEntityList.add(resultadoEntity);
+        Mockito.when(resultadoRepositorio.findAll()).thenReturn(resultadoEntityList);
 
-        ResponsePadrao responsePadrao = resultadoService.getResultado();
+        ResponsePadrao responsePadraoService = resultadoService.getResultado();
 
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        //responsePadrao.setObjeto();
-        ResultadoDTO resultadoDTO = new ResultadoDTO(0L,0L,0L,0,0);
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+
+        ResultadoDTO resultadoDTO = new ResultadoDTO(1L,1L,1L,1,1);
         List<ResultadoDTO> listaResultadoDTO = new ArrayList<>();
         listaResultadoDTO.add(resultadoDTO);
-        responsePadrao1.setListaObjeto(Arrays.asList(listaResultadoDTO.toArray()));
-        Assert.assertEquals(responsePadrao,responsePadrao1);
+        responsePadraoTeste.setListaObjeto(Arrays.asList(listaResultadoDTO.toArray()));
+        Assert.assertEquals(responsePadraoService,responsePadraoTeste);
     }
 
 

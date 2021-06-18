@@ -16,45 +16,46 @@ import java.util.stream.Collectors;
 public class PautaService {
     @Autowired
     private PautaRepository pautaRepository;
-
-
+    //Retorna lista de pautas
     public ResponsePadrao getPauta() {
         ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setListaObjeto(pautaRepository.findAll()
-                .stream()
+        responsePadrao.setListaObjeto(pautaRepository.findAll().stream()
                 .map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
                 .collect(Collectors.toList()));
         return responsePadrao;
     }
-
+    //Retorna unica pauta ou exception
     public ResponsePadrao getPautaById(Long id) {
         ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setObjeto(pautaRepository.findById(id)
-                .map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
+        responsePadrao.setObjeto(pautaRepository.findById(id).map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
                 .orElseThrow(() ->
                 new APIException(APIExceptionEnum.PautaNaoEncontrada)));
         return responsePadrao;
     }
-
-    public ResponsePadrao inserirPauta(PautaRequest pauta){
+    //Cadastra uma pauta
+    public ResponsePadrao inserirPauta(PautaRequest pautaRequest){
         ResponsePadrao responsePadrao = new ResponsePadrao();
-        if(pauta.getDescricao() == null ||pauta.getDescricao().isEmpty()){
+        //Valida se campo descrição esta vazio ou nullo
+        if(pautaRequest.getDescricao() == null ||pautaRequest.getDescricao().isEmpty()){
             throw new APIException(APIExceptionEnum.DescricaoDeveSerPreenchido);
         }
-
-        if(pauta.getTitulo() == null ||pauta.getTitulo().isEmpty()){
+        //Valida se campo titulo esta vazio ou nulo
+        if(pautaRequest.getTitulo() == null ||pautaRequest.getTitulo().isEmpty()){
             throw new APIException(APIExceptionEnum.TituloDeveSerPreenchido);
         }
 
-        PautaEntity pEntity = new PautaEntity();
-        pEntity.setDescricao(pauta.getDescricao());
-        pEntity.setTitulo(pauta.getTitulo());
-        pautaRepository.save((pEntity));
+        PautaEntity pautaEntityBanco = new PautaEntity();
+        //Seta entidade com os dados do request
+        pautaEntityBanco.setDescricao(pautaRequest.getDescricao());
+        pautaEntityBanco.setTitulo(pautaRequest.getTitulo());
 
-        PautaDTO Dto = new PautaDTO(pEntity.getId(),pEntity.getTitulo(),pEntity.getDescricao());
+        pautaEntityBanco = pautaRepository.save((pautaEntityBanco));
+
+        //Cria PautaDTO com o retorno que veio do banco
+        PautaDTO pautaDTO = new PautaDTO(pautaEntityBanco.getId(),pautaEntityBanco.getTitulo(),pautaEntityBanco.getDescricao());
+
         responsePadrao.setTexto("Pauta criada");
-        responsePadrao.setObjeto(Dto);
-        //responsePadrao.setObjeto(new PautaDTO(rep.save(pEntity)));
+        responsePadrao.setObjeto(pautaDTO);
 
         return responsePadrao;
 

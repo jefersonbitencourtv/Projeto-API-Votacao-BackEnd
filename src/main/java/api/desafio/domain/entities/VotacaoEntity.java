@@ -1,12 +1,11 @@
 package api.desafio.domain.entities;
 
-import api.desafio.domain.services.PautaService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +19,6 @@ public class VotacaoEntity {
     //@OneToOne
     //@JoinColumn(name ="Id_Pauta", referencedColumnName= "Id")
     //private PautaEntity idPauta;
-
 
     @Column(name="Id_Pauta")
     private long idPauta;

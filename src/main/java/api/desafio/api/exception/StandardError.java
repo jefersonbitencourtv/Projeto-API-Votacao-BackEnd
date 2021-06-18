@@ -2,7 +2,6 @@ package api.desafio.api.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 @AllArgsConstructor

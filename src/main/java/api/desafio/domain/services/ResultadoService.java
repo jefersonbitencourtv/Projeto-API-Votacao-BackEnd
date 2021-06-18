@@ -20,41 +20,42 @@ public class ResultadoService {
     private ResultadoRepository resultadoRepository;
     @Autowired
     private VotacaoService votacaoService;
-
-    public void inserirVotoNoResultado(String voto, long idVotacao){
+    public void inserirVotoNoResultado(String voto, long idVotacao) {
         ResultadoDTO resultadoDTO;
-        //Se ja existe resultado no banco para a votacao
-        if(getResultadoByIdVotacaoUsoParaTestarInserirResultado(idVotacao).isPresent()){
+        //Se ja existe resultado no banco para a votacao vai criar um ResultadoDTO com os dados do banco
+        if (getResultadoByIdVotacaoUsoParaTestarInserirResultado(idVotacao).isPresent()) {
             Optional<ResultadoDTO> rE = getResultadoByIdVotacaoUsoParaTestarInserirResultado(idVotacao);
             resultadoDTO = rE.get();
-        //Se nao cria resultado no banco para a votacao
-        }else {
+            //Se nao existe, cria um novo ResultadoDTO
+        } else {
             resultadoDTO = new ResultadoDTO();
             resultadoDTO.setIdVotacao(idVotacao);
 
-            Optional<VotacaoDTO> dto = votacaoService.getVotacaoByIdUsoValidacaoInsercaoResultado(idVotacao);
-            VotacaoDTO vDTO = dto.get();
-            VotacaoEntity vEntity = vDTO.VotacaoEntity();
-            //vEnt.getId();
-            resultadoDTO.setIdPauta(vEntity.getIdPauta());
+            //Busca votacao
+            Optional<VotacaoDTO> optionalVotacaoDTO = votacaoService.getVotacaoByIdUsoValidacaoInsercaoResultado(idVotacao);
+            VotacaoDTO votacaoDTO = optionalVotacaoDTO.get();
+            VotacaoEntity votacaoEntity = votacaoDTO.VotacaoEntity();
+            resultadoDTO.setIdPauta(votacaoEntity.getIdPauta());
 
         }
 
-
-            if(voto.equals("SIM")) {
-                int i = resultadoDTO.getQtdSim();
-                resultadoDTO.setQtdSim(i+1);
-            }
-            if(voto.equals("NAO")) {
-                int i = resultadoDTO.getQtdNao();
-                resultadoDTO.setQtdNao(i+1);
-            }
-
-            ResultadoEntity re = resultadoDTO.ResultadoEntity();
-            resultadoRepository.save(re);
-
+        //Se voto for sim soma na quantidade de resultados sim
+        if (voto.equals("SIM")) {
+            int i = resultadoDTO.getQtdSim();
+            resultadoDTO.setQtdSim(i + 1);
         }
+        //Se voto for nao soma na quantidade de resultados nao
+        if (voto.equals("NAO")) {
+            int i = resultadoDTO.getQtdNao();
+            resultadoDTO.setQtdNao(i + 1);
+        }
+        //Cria entidade de resultado usando ResultadoDTO
+        ResultadoEntity resultadoEntity = resultadoDTO.ResultadoEntity();
 
+        resultadoRepository.save(resultadoEntity);
+
+    }
+    //Busca resultado pelo id da votação, ou lança exception
     public ResponsePadrao getResultadoByIdVotacao(Long idVotacao) {
         ResponsePadrao responsePadrao = new ResponsePadrao();
         responsePadrao.setObjeto(resultadoRepository.findByIdVotacao(idVotacao)
@@ -62,12 +63,12 @@ public class ResultadoService {
                 .orElseThrow(()->new APIException(APIExceptionEnum.NaoExisteResultadoParaAVotacao)));
         return responsePadrao;
     }
-
+    //Método para auxiliar na inserção de um resultado pois não lança exception.
     public Optional<ResultadoDTO> getResultadoByIdVotacaoUsoParaTestarInserirResultado(long idVotacao){
         return resultadoRepository.findByIdVotacao(idVotacao)
                 .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdPauta(),r.getQtdSim(),r.getQtdNao()));
     }
-
+    //Busca resultado com id da pauta, ou lança exception
     public ResponsePadrao getResultadoByIdPauta(Long idPauta) {
         ResponsePadrao responsePadrao = new ResponsePadrao();
         responsePadrao.setObjeto(resultadoRepository.findByIdPauta(idPauta)
@@ -76,17 +77,16 @@ public class ResultadoService {
         -> new APIException(APIExceptionEnum.NaoExisteResultadoParaAPauta)));
         return responsePadrao;
     }
-
+    //Busca uma lista de resultados
     public ResponsePadrao getResultado() {
         ResponsePadrao responsePadrao = new ResponsePadrao();
         responsePadrao.setListaObjeto(
-                resultadoRepository.findAll()
-                        .stream()
+                resultadoRepository.findAll().stream()
                         .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdVotacao(),r.getQtdSim(),r.getQtdNao()))
                         .collect(Collectors.toList()));
         return responsePadrao;
     }
-
+    //Busca resultado pelo id
     public ResponsePadrao getResultadoById(Long id){
         ResponsePadrao responsePadrao = new ResponsePadrao();
         responsePadrao.setObjeto(resultadoRepository.findById(id)

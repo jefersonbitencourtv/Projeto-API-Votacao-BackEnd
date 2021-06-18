@@ -25,43 +25,53 @@ public class AssociadoServiceTests {
     private AssociadoService service;
 
     @Test
-    public void inserirAssociado() {
+    public void testInserirAssociado() {
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        AssociadoDTO dto = new AssociadoDTO("85616741051",0);
-        responsePadrao1.setObjeto(dto);
-        responsePadrao1.setTexto("Associado cadastrado");
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        AssociadoDTO associadoDTO = new AssociadoDTO("85616741051",15);
+        responsePadraoTeste.setObjeto(associadoDTO);
+        responsePadraoTeste.setTexto("Associado cadastrado");
 
         //Objeto da service
-        AssociadoEntity associadoEntity = new AssociadoEntity();
-        associadoEntity.setCpf("85616741051");
-        Mockito.when(repositorio.save(associadoEntity)).thenReturn(associadoEntity);
-        ResponsePadrao responsePadrao;
+        AssociadoEntity associadoEntityEntrada = new AssociadoEntity();
+        associadoEntityEntrada.setCpf("85616741051");
+
+        AssociadoEntity associadoEntityRetorno = new AssociadoEntity();
+        associadoEntityRetorno.setCpf("85616741051");
+        associadoEntityRetorno.setId(15L);
+
+        Mockito.when(repositorio.save(associadoEntityEntrada)).thenReturn(associadoEntityRetorno);
+        ResponsePadrao responsePadraoService;
+
         AssociadoRequest request = new AssociadoRequest();
         request.setCpf("85616741051");
-        responsePadrao = service.inserirAssociado(request);
-        Assert.assertEquals(responsePadrao,responsePadrao1);
+        responsePadraoService = service.inserirAssociado(request);
+
+        Assert.assertEquals(responsePadraoService,responsePadraoTeste);
     }
     @Test
     public void testGetAssociado(){
         //Objeto do banco
-        AssociadoEntity associado1 = new AssociadoEntity();
-        associado1.setCpf("85616741051");
-        associado1.setId(0);
-        List<AssociadoEntity> lista = new ArrayList<>();
-        lista.add(associado1);
-        Mockito.when(repositorio.findAll()).thenReturn(lista);
-        ResponsePadrao responsePadrao;
-        responsePadrao = service.getAssociado();
+        AssociadoEntity associadoEntity = new AssociadoEntity();
+        associadoEntity.setCpf("85616741051");
+        associadoEntity.setId(0);
+
+        List<AssociadoEntity> listaAssociadoEntity = new ArrayList<>();
+        listaAssociadoEntity.add(associadoEntity);
+
+        Mockito.when(repositorio.findAll()).thenReturn(listaAssociadoEntity);
+        ResponsePadrao responsePadraoService;
+        responsePadraoService = service.getAssociado();
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        AssociadoDTO dto = new AssociadoDTO("85616741051",0);
-        List<AssociadoDTO> lista1 = new ArrayList<>();
-        lista1.add(dto);
-        responsePadrao1.setListaObjeto(Arrays.asList(lista1.toArray()));
 
-        Assert.assertEquals(responsePadrao, responsePadrao1);
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        AssociadoDTO associadoDTO = new AssociadoDTO("85616741051",0);
+        List<AssociadoDTO> listaAssociadoDTO = new ArrayList<>();
+        listaAssociadoDTO.add(associadoDTO);
+        responsePadraoTeste.setListaObjeto(Arrays.asList(listaAssociadoDTO.toArray()));
+
+        Assert.assertEquals(responsePadraoService, responsePadraoTeste);
 
     }
     @Test
@@ -69,17 +79,18 @@ public class AssociadoServiceTests {
         //Objeto do banco
         AssociadoEntity associadoEntity = new AssociadoEntity();
         associadoEntity.setCpf("85616741051");
-        associadoEntity.setId(0L);
-        Mockito.when(repositorio.findById(0L)).thenReturn(Optional.of(associadoEntity));
-        ResponsePadrao responsePadrao;
-        responsePadrao = service.getAssociadoById(0L);
+        associadoEntity.setId(15L);
+        Mockito.when(repositorio.findById(15L)).thenReturn(Optional.of(associadoEntity));
+        ResponsePadrao responsePadraoService;
+
+        responsePadraoService = service.getAssociadoById(15L);
 
         //Objeto para teste
-        ResponsePadrao responsePadrao1 = new ResponsePadrao();
-        AssociadoDTO associadoDto = new AssociadoDTO("85616741051",0);
-        responsePadrao1.setObjeto(associadoDto);
+        ResponsePadrao responsePadraoTeste = new ResponsePadrao();
+        AssociadoDTO associadoDTO = new AssociadoDTO("85616741051",15);
+        responsePadraoTeste.setObjeto(associadoDTO);
 
-        Assert.assertEquals(responsePadrao, responsePadrao1);
+        Assert.assertEquals(responsePadraoService, responsePadraoTeste);
 
     }
     @Test(expected = APIException.class)
@@ -95,7 +106,7 @@ public class AssociadoServiceTests {
         Mockito.when(service.inserirAssociado(request)).thenThrow(APIException.class);
     }
     @Test(expected = APIException.class)
-    public void testCPFDeveConterNumero(){
+    public void testCPFDeveConter11Numero(){
         AssociadoRequest request = new AssociadoRequest();
         request.setCpf("22");
         Mockito.when(service.inserirAssociado(request)).thenThrow(APIException.class);

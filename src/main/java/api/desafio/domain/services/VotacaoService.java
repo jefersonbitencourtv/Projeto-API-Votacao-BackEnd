@@ -43,43 +43,44 @@ public class VotacaoService {
         return responsePadrao;
     }
 
-    public ResponsePadrao inserirVotacao(VotacaoRequest votacao){
+    public ResponsePadrao inserirVotacao(VotacaoRequest votacaoRequest){
         ResponsePadrao responsePadrao = new ResponsePadrao();
-        if(votacao.getIdPauta() == null){
+        //Valida se pauta esta nulo
+        if(votacaoRequest.getIdPauta() == null){
             throw new APIException(APIExceptionEnum.IDPautaDeveSerFornecido);
         }
-        if(getVotacaoByIdPautaUsoValidacaoInserirVotacao(votacao.getIdPauta()).isPresent()){
+        //Valida se já existe votação para a pauta
+        if(getVotacaoByIdPautaUsoValidacaoInserirVotacao(votacaoRequest.getIdPauta()).isPresent()){
             throw new APIException(APIExceptionEnum.JaExisteVotacao);
         }
         //Validação pauta existe
-        pautaService.getPautaById(votacao.getIdPauta());
+        pautaService.getPautaById(votacaoRequest.getIdPauta());
 
-        VotacaoEntity ve = new VotacaoEntity();
-        ve.setDataAbertura(LocalDateTime.now());
-        ve.setDuracaoVotacao(votacao.getDuracaoVotacao());
-        ve.setIdPauta(votacao.getIdPauta());
 
-        //foi salvo em ve o retorno do banco para funcionar no teste unitario
-        //por usar localdatetime.now() ficava com tempo diferente no teste
-        //assim os testes nunca eram concluidos com sucesso
-        ve = votacaoRepository.save(ve);
-        VotacaoDTO dto = new VotacaoDTO(ve.getId(),ve.getIdPauta(),ve.getDuracaoVotacao(),ve.getDataAbertura());
+        VotacaoEntity VotacaoEntityBanco = new VotacaoEntity();
+        //Seta entidade com os dados do request
+        VotacaoEntityBanco.setDataAbertura(LocalDateTime.now());
+        VotacaoEntityBanco.setDuracaoVotacao(votacaoRequest.getDuracaoVotacao());
+        VotacaoEntityBanco.setIdPauta(votacaoRequest.getIdPauta());
 
-        //responseP.setObjeto(new VotacaoDTO(rep.save(ve)));
-        responsePadrao.setObjeto(dto);
+        VotacaoEntityBanco = votacaoRepository.save(VotacaoEntityBanco);
+        //Cria VotacaoDTO com o retorno do banco
+        VotacaoDTO votacaoDTO = new VotacaoDTO(VotacaoEntityBanco.getId(),VotacaoEntityBanco.getIdPauta(),VotacaoEntityBanco.getDuracaoVotacao(),VotacaoEntityBanco.getDataAbertura());
+
+        responsePadrao.setObjeto(votacaoDTO);
         responsePadrao.setTexto("Votacao criada com sucesso");
         return responsePadrao;
     }
-
+    //Método para auxilair para inserção votação, busca se já há uma pauta no banco
     public Optional<VotacaoEntity> getVotacaoByIdPautaUsoValidacaoInserirVotacao(long idPauta){
         return votacaoRepository.findByIdPauta(idPauta);
     }
-
+    //Método para auxiliar na inserção de um voto, busca a data de duração da votação
     public Long getDuracaoVotacaoUsoValidacaoInserirVoto(long id) {
         Optional<VotacaoEntity> findById = votacaoRepository.findById(id);
         return findById.get().getDuracaoVotacao();
     }
-
+    //Método para auxiliar na inserção de um voto, busca a data de abertura da votação
     public LocalDateTime getDataAberturaUsoValidacaoInserirVoto(long id) {
         Optional<VotacaoEntity> findById = votacaoRepository.findById(id);
         return findById.get().getDataAbertura();
