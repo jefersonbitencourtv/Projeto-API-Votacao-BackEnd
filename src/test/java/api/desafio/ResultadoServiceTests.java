@@ -11,6 +11,7 @@ import api.desafio.domain.request.VotacaoRequest;
 import api.desafio.domain.response.ResponsePadrao;
 import api.desafio.domain.services.ResultadoService;
 import api.desafio.domain.services.VotacaoService;
+import org.apache.tomcat.jni.Local;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,17 +38,24 @@ public class ResultadoServiceTests {
     public ResultadoService resultadoService;
     @Test
     public void inserirVotoNoResultadoElseAndIF(){
+        LocalDateTime DataAbertura = LocalDateTime.now();
         VotacaoEntity votacaoEntity = new VotacaoEntity();
         votacaoEntity.setId(0L);
         votacaoEntity.setIdPauta(0L);
         votacaoEntity.setDuracaoVotacao(2000L);
-        votacaoEntity.setDataAbertura(LocalDateTime.now());
+        votacaoEntity.setDataAbertura(DataAbertura);
         ResultadoDTO dto1 = new ResultadoDTO();
         ResultadoEntity rent = new ResultadoEntity();
         //Teste do if
         Mockito.when(resultadoRepositorio.findByIdVotacao(0)).thenReturn(Optional.of(rent));
         //Teste do else
         Mockito.when(votacaoRepositorio.findByIdPauta(0L)).thenReturn(Optional.of(votacaoEntity));
+        VotacaoDTO votacaoDTO = new VotacaoDTO();
+        votacaoDTO.setDuracaoVotacao(2000L);
+        votacaoDTO.setId(0L);
+        votacaoDTO.setIdPauta(0L);
+        votacaoDTO.setDataAbertura(DataAbertura);
+        Mockito.when(votacaoService.getVotacaoByIdUsoValidacaoInsercaoResultado(0L)).thenReturn(Optional.of(votacaoDTO));
 
         //Objeto da service
         ResultadoEntity resultadoEntity = new ResultadoEntity();

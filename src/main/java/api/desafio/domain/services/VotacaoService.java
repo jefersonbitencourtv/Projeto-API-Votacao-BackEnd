@@ -58,8 +58,13 @@ public class VotacaoService {
         ve.setDataAbertura(LocalDateTime.now());
         ve.setDuracaoVotacao(votacao.getDuracaoVotacao());
         ve.setIdPauta(votacao.getIdPauta());
-        votacaoRepository.save(ve);
+
+        //foi salvo em ve o retorno do banco para funcionar no teste unitario
+        //por usar localdatetime.now() ficava com tempo diferente no teste
+        //assim os testes nunca eram concluidos com sucesso
+        ve = votacaoRepository.save(ve);
         VotacaoDTO dto = new VotacaoDTO(ve.getId(),ve.getIdPauta(),ve.getDuracaoVotacao(),ve.getDataAbertura());
+
         //responseP.setObjeto(new VotacaoDTO(rep.save(ve)));
         responsePadrao.setObjeto(dto);
         responsePadrao.setTexto("Votacao criada com sucesso");
