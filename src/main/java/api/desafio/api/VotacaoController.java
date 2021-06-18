@@ -27,7 +27,7 @@ public class VotacaoController {
 
     @PostMapping
     public ResponseEntity<ResponsePadrao> postVotacao(@RequestBody VotacaoRequest votacao) {
-        if (votacao.getDuracaoVotacao() == null) {
+        if (votacao.getDuracaoVotacao() == null  || votacao.getDuracaoVotacao() == 0) {
             votacao.setDuracaoVotacao(1L);
         }
             return ResponseEntity.ok(service.inserirVotacao(votacao));
