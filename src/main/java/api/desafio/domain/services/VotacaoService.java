@@ -45,6 +45,10 @@ public class VotacaoService {
 
     public ResponsePadrao inserirVotacao(VotacaoRequest votacaoRequest){
         ResponsePadrao responsePadrao = new ResponsePadrao();
+        //Caso duraçãoVotacão vazio ou nulo, seta valor default 1
+        if (votacaoRequest.getDuracaoVotacao() == null  || votacaoRequest.getDuracaoVotacao() == 0) {
+            votacaoRequest.setDuracaoVotacao(1L);
+        }
         //Valida se pauta esta nulo
         if(votacaoRequest.getIdPauta() == null){
             throw new APIException(APIExceptionEnum.IDPautaDeveSerFornecido);
