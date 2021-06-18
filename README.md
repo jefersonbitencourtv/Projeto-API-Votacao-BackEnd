@@ -1,5 +1,6 @@
 # desafio_digital
 ----Instruções para uso
+
 Heroku:
 https://api-votacao-sicredi.herokuapp.com/swagger-ui.html
 ------------------------
@@ -21,6 +22,7 @@ senha: 1234
 O mysql deve usar o caminho localhost:3306
 
 ----------------------------------------------------------------
+
 **Funcionamento da api:
 
 Associado controller:
