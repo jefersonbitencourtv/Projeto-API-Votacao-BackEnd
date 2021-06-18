@@ -1,0 +1,6 @@
+create table votacao(
+id bigint not null auto_increment, 
+Id_Pauta bigint not null,
+Duracao_Votacao bigint null,
+Data_Abertura DateTime not null,
+ primary key (id), foreign key(Id_Pauta) references Pauta(id));

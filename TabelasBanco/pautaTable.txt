@@ -1,0 +1,1 @@
+create table pauta(Id bigint not null auto_increment, Titulo varchar(250), Descricao varchar(250), primary key (id) );
