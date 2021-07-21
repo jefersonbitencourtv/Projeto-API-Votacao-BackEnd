@@ -1,11 +1,10 @@
 package api.desafio.domain.dto;
 
 import api.desafio.domain.entities.PautaEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PautaDTO {
@@ -17,5 +16,9 @@ public class PautaDTO {
         this.id =  p.getId();
         this.titulo = p.getTitulo();
         this.descricao = p.getDescricao();
+    }
+
+    public PautaEntity PautaEntity(){
+        return new PautaEntity(id,titulo,descricao);
     }
 }

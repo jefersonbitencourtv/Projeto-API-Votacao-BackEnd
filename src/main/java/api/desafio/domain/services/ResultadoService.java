@@ -2,13 +2,16 @@ package api.desafio.domain.services;
 
 import api.desafio.domain.dto.ResultadoDTO;
 import api.desafio.domain.dto.VotacaoDTO;
+import api.desafio.domain.entities.PautaEntity;
 import api.desafio.domain.entities.ResultadoEntity;
 import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.repository.ResultadoRepository;
-import api.desafio.domain.response.ResponsePadrao;
+import api.desafio.domain.response.ApiResponse;
+import api.desafio.domain.response.ApiResponseResultadoDTO;
 import api.desafio.exception.APIException;
 import api.desafio.exception.APIExceptionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -29,13 +32,13 @@ public class ResultadoService {
             //Se nao existe, cria um novo ResultadoDTO
         } else {
             resultadoDTO = new ResultadoDTO();
-            resultadoDTO.setIdVotacao(idVotacao);
 
             //Busca votacao
             Optional<VotacaoDTO> optionalVotacaoDTO = votacaoService.getVotacaoByIdUsoValidacaoInsercaoResultado(idVotacao);
             VotacaoDTO votacaoDTO = optionalVotacaoDTO.get();
             VotacaoEntity votacaoEntity = votacaoDTO.VotacaoEntity();
-            resultadoDTO.setIdPauta(votacaoEntity.getIdPauta());
+            resultadoDTO.setIdVotacaoEntity(votacaoEntity.getId());
+            resultadoDTO.setIdPautaEntity(votacaoEntity.getPauta().getId());
 
         }
 
@@ -56,43 +59,57 @@ public class ResultadoService {
 
     }
     //Busca resultado pelo id da votação, ou lança exception
-    public ResponsePadrao getResultadoByIdVotacao(Long idVotacao) {
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setObjeto(resultadoRepository.findByIdVotacao(idVotacao)
-                .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdPauta(),r.getQtdSim(),r.getQtdNao()))
-                .orElseThrow(()->new APIException(APIExceptionEnum.NaoExisteResultadoParaAVotacao)));
-        return responsePadrao;
+    public ApiResponseResultadoDTO getResultadoByIdVotacao(Long idVotacao) {
+        ApiResponseResultadoDTO apiResponseResultadoDTO = new ApiResponseResultadoDTO();
+        VotacaoEntity votacaoEntity = new VotacaoEntity();
+        votacaoEntity.setId(idVotacao);
+        apiResponseResultadoDTO.setResultado(resultadoRepository.findByIdVotacao(votacaoEntity)
+                .map(r->new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()))
+                .orElseThrow(()->new APIException(APIExceptionEnum.NAO_EXISTE_RESULTADO_PARA_A_VOTACAO)));
+        apiResponseResultadoDTO.setMensagem("Sucesso!");
+        apiResponseResultadoDTO.setStatus(HttpStatus.OK);
+        return apiResponseResultadoDTO;
     }
     //Método para auxiliar na inserção de um resultado pois não lança exception.
     public Optional<ResultadoDTO> getResultadoByIdVotacaoUsoParaTestarInserirResultado(long idVotacao){
-        return resultadoRepository.findByIdVotacao(idVotacao)
-                .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdPauta(),r.getQtdSim(),r.getQtdNao()));
+        VotacaoEntity votacaoEntity = new VotacaoEntity();
+        votacaoEntity.setId(idVotacao);
+        return resultadoRepository.findByIdVotacao(votacaoEntity)
+                .map(r->new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()));
     }
     //Busca resultado com id da pauta, ou lança exception
-    public ResponsePadrao getResultadoByIdPauta(Long idPauta) {
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setObjeto(resultadoRepository.findByIdPauta(idPauta)
-                .map(r -> new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdPauta(),r.getQtdSim(),r.getQtdNao()))
+    public ApiResponseResultadoDTO getResultadoByIdPauta(Long idPauta) {
+        ApiResponseResultadoDTO apiResponseResultadoDTO = new ApiResponseResultadoDTO();
+        PautaEntity pautaEntity = new PautaEntity();
+        pautaEntity.setId(idPauta);
+        apiResponseResultadoDTO.setResultado(resultadoRepository.findByIdPauta(pautaEntity)
+                .map(r -> new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()))
                 .orElseThrow(()
-        -> new APIException(APIExceptionEnum.NaoExisteResultadoParaAPauta)));
-        return responsePadrao;
+        -> new APIException(APIExceptionEnum.NAO_EXISTE_RESULTADO_PARA_A_PAUTA)));
+        apiResponseResultadoDTO.setMensagem("Sucesso!");
+        apiResponseResultadoDTO.setStatus(HttpStatus.OK);
+        return apiResponseResultadoDTO;
     }
     //Busca uma lista de resultados
-    public ResponsePadrao getResultado() {
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setListaObjeto(
+    public ApiResponseResultadoDTO getResultado() {
+        ApiResponseResultadoDTO apiResponseResultadoDTO = new ApiResponseResultadoDTO();
+        apiResponseResultadoDTO.setListaResultado(
                 resultadoRepository.findAll().stream()
-                        .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdVotacao(),r.getQtdSim(),r.getQtdNao()))
+                        .map(r->new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()))
                         .collect(Collectors.toList()));
-        return responsePadrao;
+        apiResponseResultadoDTO.setMensagem("Sucesso!");
+        apiResponseResultadoDTO.setStatus(HttpStatus.OK);
+        return apiResponseResultadoDTO;
     }
     //Busca resultado pelo id
-    public ResponsePadrao getResultadoById(Long id){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setObjeto(resultadoRepository.findById(id)
-                .map(r->new ResultadoDTO(r.getId(),r.getIdVotacao(),r.getIdVotacao(),r.getQtdSim(),r.getQtdNao()))
+    public ApiResponseResultadoDTO getResultadoById(Long id){
+        ApiResponseResultadoDTO apiResponseResultadoDTO = new ApiResponseResultadoDTO();
+        apiResponseResultadoDTO.setResultado(resultadoRepository.findById(id)
+                .map(r->new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()))
                 .orElseThrow(()
-                -> new APIException(APIExceptionEnum.ResultadoNaoEncontrado)));
-        return responsePadrao;
+                -> new APIException(APIExceptionEnum.RESULTADO_NAO_ENCONTRADO)));
+        apiResponseResultadoDTO.setMensagem("Sucesso!");
+        apiResponseResultadoDTO.setStatus(HttpStatus.OK);
+        return apiResponseResultadoDTO;
     }
 }

@@ -1,38 +1,35 @@
 package api.desafio.domain.dto;
 
+import api.desafio.domain.entities.PautaEntity;
 import api.desafio.domain.entities.ResultadoEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import api.desafio.domain.entities.VotacaoEntity;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResultadoDTO {
     private long id;
-    private long idVotacao;
-    private long idPauta;
+    private long idVotacaoEntity;
+    private long idPautaEntity;
     private int qtdSim;
     private int qtdNao;
 
-    public ResultadoDTO(ResultadoEntity r){
+    /*public ResultadoDTO(ResultadoEntity r){
         this.id = r.getId();
-        this.idVotacao = r.getIdVotacao();
-        this.idPauta = r.getIdPauta();
+        this.votacaoEntity = r.getVotacaoEntity();
+        this.pautaEntity = r.getPautaEntity();
         this.qtdSim = r.getQtdSim();
         this.qtdNao = r.getQtdNao();
-    }
-
-    public void setIdPauta(long idPauta) {
-        this.idPauta = idPauta;
-    }
-
-    public long getIdPauta() {
-        return idPauta;
-    }
+    }*/
 
     public ResultadoEntity ResultadoEntity(){
-        return new ResultadoEntity(getId(), getIdVotacao(), getIdPauta(), getQtdSim(), getQtdNao());
+        VotacaoEntity votacaoEntity = new VotacaoEntity();
+        PautaEntity pautaEntity = new PautaEntity();
+        votacaoEntity.setId(idVotacaoEntity);
+        pautaEntity.setId(idPautaEntity);
+        return new ResultadoEntity(getId(), votacaoEntity, pautaEntity, getQtdSim(), getQtdNao());
     }
 }
 

@@ -1,14 +1,13 @@
 package api.desafio.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-@Data
 @Entity(name = "Pauta")
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class PautaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

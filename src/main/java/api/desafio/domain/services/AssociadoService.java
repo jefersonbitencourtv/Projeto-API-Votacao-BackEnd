@@ -3,10 +3,13 @@ import api.desafio.domain.dto.AssociadoDTO;
 import api.desafio.domain.entities.AssociadoEntity;
 import api.desafio.domain.repository.AssociadoRepository;
 import api.desafio.domain.request.AssociadoRequest;
-import api.desafio.domain.response.ResponsePadrao;
+import api.desafio.domain.response.ApiResponse;
+import api.desafio.domain.response.ApiResponseAssociadoDTO;
+import api.desafio.domain.services.apiCpf.ApiCpfService;
 import api.desafio.domain.utils.ValidadorCPF;
 import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
@@ -16,43 +19,52 @@ public class AssociadoService {
     private AssociadoRepository associadoRepository;
 
     //Retorna uma lista de associados
-    public ResponsePadrao getAssociado(){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-         responsePadrao.setListaObjeto(associadoRepository.findAll().stream().map(a ->
+    public ApiResponseAssociadoDTO getAssociado(){
+        ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
+        apiResponseAssociadoDTO.setListaAssociado(associadoRepository.findAll().stream().map(a ->
                 new AssociadoDTO(a.getCpf(),a.getId()))
                 .collect(Collectors.toList()));
+        apiResponseAssociadoDTO.setMensagem("Sucesso!");
+        apiResponseAssociadoDTO.setStatus(HttpStatus.OK);
 
-        return responsePadrao;
+        return apiResponseAssociadoDTO;
     }
     //Retorna um unico exception ou nulo
-    public ResponsePadrao getAssociadoById(Long id){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setObjeto(associadoRepository.findById(id)
+    public ApiResponseAssociadoDTO getAssociadoById(Long id){
+        ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
+        apiResponseAssociadoDTO.setAssociado(associadoRepository.findById(id)
                 .map(a -> new AssociadoDTO(a.getCpf(),a.getId()))
-                .orElseThrow(()-> new APIException(APIExceptionEnum.AssociadoNaoEncontrado)));
-        return responsePadrao;
+                .orElseThrow(()-> new APIException(APIExceptionEnum.ASSOCIADO_NAO_ENCONTRADO)));
+        apiResponseAssociadoDTO.setMensagem("Sucesso!");
+        apiResponseAssociadoDTO.setStatus(HttpStatus.OK);
+
+        return apiResponseAssociadoDTO;
     }
-    public ResponsePadrao inserirAssociado(AssociadoRequest associadoRequest){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
+    public ApiResponseAssociadoDTO inserirAssociado(AssociadoRequest associadoRequest){
+        ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
         //Valida cpf nulo ou vazio
         if(associadoRequest.getCpf() == null ||associadoRequest.getCpf().isEmpty()){
-            throw new APIException(APIExceptionEnum.CpfDeveSerPreenchido);
+            throw new APIException(APIExceptionEnum.CPF_DEVE_SER_PREENCHIDO);
         }
         //Valida cpf com apenas números
         if(!(associadoRequest.getCpf().matches("[0-9]*"))){
-            throw new APIException(APIExceptionEnum.CpfDeveConterApenasNumeros);
+            throw new APIException(APIExceptionEnum.CPF_DEVE_CONTER_APENAS_NUMEROS);
         }
         //Valida cpf com exatamente 11 números
         if(associadoRequest.getCpf().length() != 11){
-            throw new APIException(APIExceptionEnum.CpfDeveConter11Numeros);
+            throw new APIException(APIExceptionEnum.CPF_DEVE_CONTER_11_NUMEROS);
         }
         //Valida cpf se é valido, bibilioteca utils ValidadorCPF
-        if(ValidadorCPF.isValidCPF(associadoRequest.getCpf()) == false) {
-            throw new APIException(APIExceptionEnum.CPFInvalido);
-        }
+        /*if(ValidadorCPF.isValidCPF(associadoRequest.getCpf()) == false) {
+            throw new APIException(APIExceptionEnum.CPF_INVALIDO);
+        }*/
+        //Valida cpf se é valido, api externa
+        ApiCpfService apiCpfService = new ApiCpfService();
+        apiCpfService.verificaCpf(associadoRequest.getCpf());
+
         //Valida se já existe aquele cpf no banco
         if(associadoRepository.findByCpf(associadoRequest.getCpf()).isPresent()){
-            throw new APIException(APIExceptionEnum.CpfJáExisteAssociado);
+            throw new APIException(APIExceptionEnum.CPF_JA_EXISTE_ASSOCIADO);
         }
 
         AssociadoEntity associadoEntityBanco = new AssociadoEntity();
@@ -63,9 +75,9 @@ public class AssociadoService {
         //Cria AssociadoDTO com os parametros do banco
         AssociadoDTO associadoDTO = new AssociadoDTO(associadoEntityBanco.getCpf() , associadoEntityBanco.getId());
 
-        responsePadrao.setTexto("Associado cadastrado");
-        responsePadrao.setObjeto(associadoDTO);
-
-        return responsePadrao;
+        apiResponseAssociadoDTO.setMensagem("Associado cadastrado, ID:" + associadoDTO.getId());
+        apiResponseAssociadoDTO.setStatus(HttpStatus.CREATED);
+        apiResponseAssociadoDTO.setAssociado(associadoDTO);
+        return apiResponseAssociadoDTO;
     }
 }

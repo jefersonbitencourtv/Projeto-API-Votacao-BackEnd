@@ -1,8 +1,9 @@
-package api.desafio.api;
+package api.desafio.controller;
 
 
-import api.desafio.domain.response.ResponsePadrao;
+import api.desafio.domain.response.ApiResponseResultadoDTO;
 import api.desafio.domain.services.ResultadoService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,21 +18,26 @@ public class ResultadoController {
     @Autowired
     private ResultadoService service;
 
+    @ApiOperation(value="Mostra todos resultados")
     @GetMapping
-    public ResponseEntity<ResponsePadrao> getResultado(){
+    public ResponseEntity<ApiResponseResultadoDTO> getResultado(){
         return ResponseEntity.ok(service.getResultado());
     }
 
+    @ApiOperation(value="Mostra resultado buscando pelo id da votação")
     @GetMapping("/votacao/{id}")
-    public ResponseEntity<ResponsePadrao> getResultadoByIdVotacao(@PathVariable Long id){
+    public ResponseEntity<ApiResponseResultadoDTO> getResultadoByIdVotacao(@PathVariable Long id){
         return ResponseEntity.ok(service.getResultadoByIdVotacao(id));
     }
+    @ApiOperation(value="Mostra resultado buscando pelo id da pauta")
     @GetMapping("/pauta/{id}")
-    public ResponseEntity<ResponsePadrao> getResultadoByIdPauta(@PathVariable Long id){
+    public ResponseEntity<ApiResponseResultadoDTO> getResultadoByIdPauta(@PathVariable Long id){
         return ResponseEntity.ok(service.getResultadoByIdPauta(id));
     }
+
+    @ApiOperation(value="Mostra resultando buscando pelo id")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponsePadrao> getResultadoById(@PathVariable Long id){
+    public ResponseEntity<ApiResponseResultadoDTO> getResultadoById(@PathVariable Long id){
         return ResponseEntity.ok(service.getResultadoById(id));
     }
 }

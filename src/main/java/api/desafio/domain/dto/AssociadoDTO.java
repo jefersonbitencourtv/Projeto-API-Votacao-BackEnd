@@ -1,13 +1,12 @@
 package api.desafio.domain.dto;
 
 import api.desafio.domain.entities.AssociadoEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class AssociadoDTO {
     private String cpf;
     private long id;
@@ -16,6 +15,9 @@ public class AssociadoDTO {
         this.cpf = a.getCpf();
         this.id = a.getId();
 
+    }
+    public AssociadoEntity associadoEntity(){
+        return new AssociadoEntity(id, cpf);
     }
 
 }
