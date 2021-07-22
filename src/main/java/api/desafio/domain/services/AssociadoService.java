@@ -3,10 +3,8 @@ import api.desafio.domain.dto.AssociadoDTO;
 import api.desafio.domain.entities.AssociadoEntity;
 import api.desafio.domain.repository.AssociadoRepository;
 import api.desafio.domain.request.AssociadoRequest;
-import api.desafio.domain.response.ApiResponse;
 import api.desafio.domain.response.ApiResponseAssociadoDTO;
 import api.desafio.domain.services.apiCpf.ApiCpfService;
-import api.desafio.domain.utils.ValidadorCPF;
 import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +15,8 @@ import java.util.stream.Collectors;
 public class AssociadoService {
     @Autowired
     private AssociadoRepository associadoRepository;
+    @Autowired
+    private ApiCpfService apiCpfService;
 
     //Retorna uma lista de associados
     public ApiResponseAssociadoDTO getAssociado(){
@@ -59,7 +59,7 @@ public class AssociadoService {
             throw new APIException(APIExceptionEnum.CPF_INVALIDO);
         }*/
         //Valida cpf se é valido, api externa
-        ApiCpfService apiCpfService = new ApiCpfService();
+
         apiCpfService.verificaCpf(associadoRequest.getCpf());
 
         //Valida se já existe aquele cpf no banco

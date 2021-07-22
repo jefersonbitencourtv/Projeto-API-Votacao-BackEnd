@@ -3,29 +3,21 @@ package api.desafio.domain.services.apiCpf;
 import api.desafio.domain.dto.apiCpf.ApiCpfDTO;
 import api.desafio.exception.APIException;
 import api.desafio.exception.APIExceptionEnum;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+@NoArgsConstructor
 @Service
 public class ApiCpfService {
-    private String urlCpf;
     @Value("${apicpf.url}")
-    public void seturlCpf(String apicpf){
-        this.urlCpf = apicpf;
-    }
-
-
-
+    private String apiCpfUrl;
 
     public ApiCpfDTO verificaCpf(String cpf) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = urlCpf+cpf;
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println(urlCpf);
+        String url = apiCpfUrl+cpf;
         ResponseEntity<ApiCpfDTO> responseCPF = restTemplate.getForEntity(url, ApiCpfDTO.class);
 
         if(responseCPF.getStatusCodeValue() == 404){
