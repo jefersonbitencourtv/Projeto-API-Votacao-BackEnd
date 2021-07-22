@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/v1/associado")
 public class AssociadoController {
@@ -27,7 +29,7 @@ public class AssociadoController {
     }
     @ApiOperation(value="Cria associado")
     @PostMapping
-    public ResponseEntity<ApiResponseAssociadoDTO> postAssociado(@RequestBody AssociadoRequest associado){
+    public ResponseEntity<ApiResponseAssociadoDTO> postAssociado(@RequestBody AssociadoRequest associado) throws IOException {
         return ResponseEntity.created(null).body(service.inserirAssociado(associado));
     }
 }

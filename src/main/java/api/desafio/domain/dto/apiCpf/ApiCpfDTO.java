@@ -8,8 +8,6 @@ import java.io.Serializable;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiCpfDTO implements Serializable {
+public class ApiCpfDTO {
     String status;
-    String message;
-    HttpStatus httpStatus;
 }

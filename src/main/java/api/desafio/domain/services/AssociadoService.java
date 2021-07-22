@@ -9,14 +9,19 @@ import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 @Service
 public class AssociadoService {
-    @Autowired
-    private AssociadoRepository associadoRepository;
-    @Autowired
-    private ApiCpfService apiCpfService;
+    private final AssociadoRepository associadoRepository;
+    private final ApiCpfService apiCpfService;
+
+    public AssociadoService(AssociadoRepository associadoRepository, ApiCpfService apiCpfService) {
+        this.associadoRepository = associadoRepository;
+        this.apiCpfService = apiCpfService;
+    }
 
     //Retorna uma lista de associados
     public ApiResponseAssociadoDTO getAssociado(){
@@ -40,7 +45,7 @@ public class AssociadoService {
 
         return apiResponseAssociadoDTO;
     }
-    public ApiResponseAssociadoDTO inserirAssociado(AssociadoRequest associadoRequest){
+    public ApiResponseAssociadoDTO inserirAssociado(AssociadoRequest associadoRequest) throws IOException {
         ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
         //Valida cpf nulo ou vazio
         if(associadoRequest.getCpf() == null ||associadoRequest.getCpf().isEmpty()){
