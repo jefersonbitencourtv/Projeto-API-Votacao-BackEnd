@@ -2,9 +2,13 @@
 ----Novas implementações
 
   Branch developer está sendo inserido as novas funcionalidades.
+  
   -Mapeamento JPA
+  
   -Consulta api externa para validação e se cpf pode votar
+  
   -Responses especificos para os endpoints
+  
   Em implementação documentação mais elaborada com swagger
   
   
