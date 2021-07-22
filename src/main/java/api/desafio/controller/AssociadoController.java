@@ -29,7 +29,7 @@ public class AssociadoController {
     }
     @ApiOperation(value="Cria associado")
     @PostMapping
-    public ResponseEntity<ApiResponseAssociadoDTO> postAssociado(@RequestBody AssociadoRequest associado) throws IOException {
+    public ResponseEntity<ApiResponseAssociadoDTO> postAssociado(@RequestBody AssociadoRequest associado) {
         return ResponseEntity.created(null).body(service.inserirAssociado(associado));
     }
 }

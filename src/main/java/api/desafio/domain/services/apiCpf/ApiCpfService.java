@@ -4,54 +4,46 @@ import api.desafio.cliente.ApiCpfCliente;
 import api.desafio.domain.dto.apiCpf.ApiCpfDTO;
 import api.desafio.exception.APIException;
 import api.desafio.exception.APIExceptionEnum;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.Util;
+import io.swagger.annotations.Api;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.print.attribute.standard.Media;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 @Service
 public class ApiCpfService {
-    //@Value("${apicpf.url}")
-    //private String apiCpfUrl;
     private final ApiCpfCliente apiCpfCliente;
+    private final ObjectMapper mapper;
 
-    public ApiCpfService(ApiCpfCliente apiCpfCliente) {
-        this.apiCpfCliente = apiCpfCliente;
+    public ApiCpfService(ApiCpfCliente apiCpfCliente, ObjectMapper mapper) {
+       this.apiCpfCliente = apiCpfCliente;
+       this.mapper = mapper;
     }
 
-    public ApiCpfDTO verificaCpf(String cpf) throws IOException {
-        Response responseApi = apiCpfCliente.validaCpf(cpf);
-        String bodyStr = Util.toString(responseApi.body().asReader(StandardCharsets.UTF_8));
-
-
-        return null;
-    }
-
-
-
-        /*RestTemplate restTemplate = new RestTemplate();
-        String url = apiCpfUrl+cpf;
-        //ResponseEntity<ApiCpfDTO> responseCPF = restTemplate.getForEntity(url, ApiCpfDTO.class);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        HttpEntity<ApiCpfDTO> responseCPF = restTemplate.exchange(url, HttpMethod.GET,entity,ApiCpfDTO.class);
-        if(responseCPF.get == 404){
-            throw new APIException(APIExceptionEnum.CPF_INVALIDO);
+    public String verificaCpf(String cpf){
+        try {
+            Response responseApi = apiCpfCliente.validaCpf(cpf);
+            if (responseApi.status() == 404) {
+                throw new APIException(APIExceptionEnum.CPF_INVALIDO);
+            }
+            String bodyStr = Util.toString(responseApi.body().asReader(StandardCharsets.UTF_8));
+            ApiCpfDTO apiCpfDTO = mapper.readValue(bodyStr, ApiCpfDTO.class);
+            return apiCpfDTO.getStatus();
+        } catch (IOException ex){
+            throw new APIException(APIExceptionEnum.ERRO_API);
         }
-        ApiCpfDTO apiCPF = responseCPF.getBody();
-        return apiCPF;
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://user-info.herokuapp.com/users/" + "85980439072";
-        ResponseEntity<ApiCpfDTO> responseCPF = restTemplate.getForEntity(url, ApiCpfDTO.class);
-        ApiCpfDTO apiCPF = responseCPF.getBody();
-        System.out.println(apiCPF.getStatus());*/
+
     }
+
+}
 

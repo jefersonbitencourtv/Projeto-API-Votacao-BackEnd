@@ -1,5 +1,6 @@
 package api.desafio.domain.services;
 
+import api.desafio.cliente.ApiCpfCliente;
 import api.desafio.domain.dto.AssociadoDTO;
 import api.desafio.domain.dto.VotacaoDTO;
 import api.desafio.domain.dto.VotoDTO;
@@ -12,6 +13,7 @@ import api.desafio.domain.response.ApiResponse;
 import api.desafio.domain.response.ApiResponseAssociadoDTO;
 import api.desafio.domain.response.ApiResponseVotacaoDTO;
 import api.desafio.domain.response.ApiResponseVotoDTO;
+import api.desafio.domain.services.apiCpf.ApiCpfService;
 import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ public class VotoService {
     private ResultadoService serviceResultado;
     @Autowired
     private AssociadoService serviceAssociado;
+    @Autowired
+    private ApiCpfService apiCpfService;
 
     //Busca uma lista de votos
     public ApiResponseVotoDTO getVoto(){
@@ -86,6 +90,13 @@ public class VotoService {
         //Cria DTO e entitade votacao e associado
         AssociadoDTO associadoDTO = apiResponseAssociadoDTO.getAssociado();
         AssociadoEntity associadoEntity = associadoDTO.associadoEntity();
+
+
+        //Valida se associado pode votar
+        if(apiCpfService.verificaCpf(associadoDTO.getCpf()).equals("UNABLE_TO_VOTE")){
+            throw new APIException(APIExceptionEnum.CPF_NAO_PODE_VOTAR);
+        }
+
         VotacaoDTO votacaoDTO = apiResponseVotacaoDTO.getVotacao();
         VotacaoEntity votacaoEntity = votacaoDTO.VotacaoEntity();
         //Valida se o associado já votou

@@ -45,7 +45,7 @@ public class AssociadoService {
 
         return apiResponseAssociadoDTO;
     }
-    public ApiResponseAssociadoDTO inserirAssociado(AssociadoRequest associadoRequest) throws IOException {
+    public ApiResponseAssociadoDTO inserirAssociado(AssociadoRequest associadoRequest) {
         ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
         //Valida cpf nulo ou vazio
         if(associadoRequest.getCpf() == null ||associadoRequest.getCpf().isEmpty()){
@@ -63,8 +63,7 @@ public class AssociadoService {
         /*if(ValidadorCPF.isValidCPF(associadoRequest.getCpf()) == false) {
             throw new APIException(APIExceptionEnum.CPF_INVALIDO);
         }*/
-        //Valida cpf se é valido, api externa
-
+        //Valida cpf se é valido, utilizando a api externa
         apiCpfService.verificaCpf(associadoRequest.getCpf());
 
         //Valida se já existe aquele cpf no banco

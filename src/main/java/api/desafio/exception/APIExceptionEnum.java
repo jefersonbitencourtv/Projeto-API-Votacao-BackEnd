@@ -3,7 +3,9 @@ package api.desafio.exception;
 import org.springframework.http.HttpStatus;
 
 public enum APIExceptionEnum {
-    CPF_INVALIDO("Cpf inválido", HttpStatus.BAD_REQUEST,"Campo inválido"),
+    CPF_NAO_PODE_VOTAR("Esse cpf não esta habilitado para votar", HttpStatus.OK,"Cpf impossibilitado"),
+    ERRO_API("Ocorreu um erro interno. Tente novamente.",HttpStatus.BAD_REQUEST, "Erro interno"),
+    CPF_INVALIDO("Cpf inválido", HttpStatus.UNPROCESSABLE_ENTITY,"Campo inválido"),
     ASSOCIADO_JA_VOTOU("Associado já votou nessa pauta", HttpStatus.FORBIDDEN, "Associado Já Votou"),
     CPF_DEVE_SER_PREENCHIDO("Campo cpf deve ser preenchido", HttpStatus.BAD_REQUEST,"Campo cpf inválido"),
     CPF_DEVE_CONTER_APENAS_NUMEROS("Campo cpf deve ser apenas números", HttpStatus.BAD_REQUEST,"Campo cpf inválido"),
