@@ -14,7 +14,7 @@ public interface VotoRepository extends JpaRepository<VotoEntity,Long> {
         return null;
     }
 
-    @Query("SELECT v FROM votar v WHERE v.associadoEntity = :idAssociado AND v.votacaoEntity = :idVotacao")
-    Optional<VotoEntity> findByIdAssociadoAndIdVotacao(@Param("idAssociado") AssociadoEntity associado, @Param("idVotacao") VotacaoEntity votacao);
-
+    //@Query("SELECT v FROM votar v WHERE v.associadoEntity = :idAssociado AND v.votacaoEntity = :idVotacao")
+    //Optional<VotoEntity> findByIdAssociadoAndIdVotacao(@Param("idAssociado") AssociadoEntity associado, @Param("idVotacao") VotacaoEntity votacao);
+    Optional<VotoEntity> findByAssociadoEntityAndVotacaoEntity(@Param("idAssociado") AssociadoEntity associado, @Param("idVotacao") VotacaoEntity votacao);
 }

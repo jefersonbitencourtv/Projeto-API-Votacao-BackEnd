@@ -3,16 +3,23 @@ package api.desafio.domain.dto;
 import api.desafio.domain.entities.AssociadoEntity;
 import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.entities.VotoEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ApiModel(description = "Dados do voto")
 public class VotoDTO {
+    @ApiModelProperty(value="ID do voto", required = true)
     private long id;
+    @ApiModelProperty(value="ID do associado", required = true)
     private long idAssociado;
+    @ApiModelProperty(value="ID da votação", required = true)
     private long idVotacao;
+    @ApiModelProperty(value="Voto escolhido(sim ou não)", required = true)
     private String voto;
 
     /*public VotoDTO(VotoEntity v){

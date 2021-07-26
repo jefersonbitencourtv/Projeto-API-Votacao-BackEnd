@@ -6,7 +6,6 @@ import api.desafio.domain.entities.PautaEntity;
 import api.desafio.domain.entities.ResultadoEntity;
 import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.repository.ResultadoRepository;
-import api.desafio.domain.response.ApiResponse;
 import api.desafio.domain.response.ApiResponseResultadoDTO;
 import api.desafio.exception.APIException;
 import api.desafio.exception.APIExceptionEnum;
@@ -37,8 +36,8 @@ public class ResultadoService {
             Optional<VotacaoDTO> optionalVotacaoDTO = votacaoService.getVotacaoByIdUsoValidacaoInsercaoResultado(idVotacao);
             VotacaoDTO votacaoDTO = optionalVotacaoDTO.get();
             VotacaoEntity votacaoEntity = votacaoDTO.VotacaoEntity();
-            resultadoDTO.setIdVotacaoEntity(votacaoEntity.getId());
-            resultadoDTO.setIdPautaEntity(votacaoEntity.getPauta().getId());
+            resultadoDTO.setIdVotacao(votacaoEntity.getId());
+            resultadoDTO.setIdPauta(votacaoEntity.getPauta().getId());
 
         }
 
@@ -63,7 +62,7 @@ public class ResultadoService {
         ApiResponseResultadoDTO apiResponseResultadoDTO = new ApiResponseResultadoDTO();
         VotacaoEntity votacaoEntity = new VotacaoEntity();
         votacaoEntity.setId(idVotacao);
-        apiResponseResultadoDTO.setResultado(resultadoRepository.findByIdVotacao(votacaoEntity)
+        apiResponseResultadoDTO.setResultado(resultadoRepository.findByVotacaoEntity(votacaoEntity)
                 .map(r->new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()))
                 .orElseThrow(()->new APIException(APIExceptionEnum.NAO_EXISTE_RESULTADO_PARA_A_VOTACAO)));
         apiResponseResultadoDTO.setMensagem("Sucesso!");
@@ -74,7 +73,7 @@ public class ResultadoService {
     public Optional<ResultadoDTO> getResultadoByIdVotacaoUsoParaTestarInserirResultado(long idVotacao){
         VotacaoEntity votacaoEntity = new VotacaoEntity();
         votacaoEntity.setId(idVotacao);
-        return resultadoRepository.findByIdVotacao(votacaoEntity)
+        return resultadoRepository.findByVotacaoEntity(votacaoEntity)
                 .map(r->new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()));
     }
     //Busca resultado com id da pauta, ou lança exception
@@ -82,7 +81,7 @@ public class ResultadoService {
         ApiResponseResultadoDTO apiResponseResultadoDTO = new ApiResponseResultadoDTO();
         PautaEntity pautaEntity = new PautaEntity();
         pautaEntity.setId(idPauta);
-        apiResponseResultadoDTO.setResultado(resultadoRepository.findByIdPauta(pautaEntity)
+        apiResponseResultadoDTO.setResultado(resultadoRepository.findByPautaEntity(pautaEntity)
                 .map(r -> new ResultadoDTO(r.getId(),r.getVotacaoEntity().getId(),r.getPautaEntity().getId(),r.getQtdSim(),r.getQtdNao()))
                 .orElseThrow(()
         -> new APIException(APIExceptionEnum.NAO_EXISTE_RESULTADO_PARA_A_PAUTA)));

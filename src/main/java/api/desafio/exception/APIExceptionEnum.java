@@ -6,7 +6,7 @@ public enum APIExceptionEnum {
     CPF_NAO_PODE_VOTAR("Esse cpf não esta habilitado para votar", HttpStatus.OK,"Cpf impossibilitado"),
     ERRO_API("Ocorreu um erro interno. Tente novamente.",HttpStatus.BAD_REQUEST, "Erro interno"),
     CPF_INVALIDO("Cpf inválido", HttpStatus.UNPROCESSABLE_ENTITY,"Campo inválido"),
-    ASSOCIADO_JA_VOTOU("Associado já votou nessa pauta", HttpStatus.FORBIDDEN, "Associado Já Votou"),
+    ASSOCIADO_JA_VOTOU("Associado já votou nessa pauta", HttpStatus.CONFLICT, "Associado Já Votou"),
     CPF_DEVE_SER_PREENCHIDO("Campo cpf deve ser preenchido", HttpStatus.BAD_REQUEST,"Campo cpf inválido"),
     CPF_DEVE_CONTER_APENAS_NUMEROS("Campo cpf deve ser apenas números", HttpStatus.BAD_REQUEST,"Campo cpf inválido"),
     CPF_DEVE_CONTER_11_NUMEROS("Campo cpf deve conter 11 numeros", HttpStatus.BAD_REQUEST, "Campo cpf inválido"),
@@ -25,7 +25,7 @@ public enum APIExceptionEnum {
     VOTO_DEVE_SER_FORNECIDO("Voto deve ser fornecido", HttpStatus.BAD_REQUEST,"Voto deve ser fornecida"),
     VOTO_NAO_ENCONTRADO("Voto não encontrado",HttpStatus.NOT_FOUND,"Voto não encontrado"),
     VOTO_DEVE_SER_SIM_OU_NAO("Voto deve ser apenas sim ou não",HttpStatus.BAD_REQUEST,"Campo invalido"),
-    VOTACAO_NAO_ESTA_DISPONIVEL("Votação não esta mais disponivel",HttpStatus.FORBIDDEN,"Votação encerrada"),
+    VOTACAO_NAO_ESTA_DISPONIVEL("Votação não esta mais disponivel",HttpStatus.UNPROCESSABLE_ENTITY,"Votação encerrada"),
     ASSOCIADO_NAO_ENCONTRADO("Associado não encontrado",HttpStatus.NOT_FOUND,"Não encontrado");
 
 private String texto;

@@ -1,6 +1,5 @@
 package api.desafio.domain.services;
 
-import api.desafio.cliente.ApiCpfCliente;
 import api.desafio.domain.dto.AssociadoDTO;
 import api.desafio.domain.dto.VotacaoDTO;
 import api.desafio.domain.dto.VotoDTO;
@@ -9,7 +8,6 @@ import api.desafio.domain.entities.VotacaoEntity;
 import api.desafio.domain.entities.VotoEntity;
 import api.desafio.domain.repository.VotoRepository;
 import api.desafio.domain.request.VotarRequest;
-import api.desafio.domain.response.ApiResponse;
 import api.desafio.domain.response.ApiResponseAssociadoDTO;
 import api.desafio.domain.response.ApiResponseVotacaoDTO;
 import api.desafio.domain.response.ApiResponseVotoDTO;
@@ -100,7 +98,7 @@ public class VotoService {
         VotacaoDTO votacaoDTO = apiResponseVotacaoDTO.getVotacao();
         VotacaoEntity votacaoEntity = votacaoDTO.VotacaoEntity();
         //Valida se o associado já votou
-        if (votoRepository.findByIdAssociadoAndIdVotacao(associadoEntity, votacaoEntity).isPresent()) {
+        if (votoRepository.findByAssociadoEntityAndVotacaoEntity(associadoEntity, votacaoEntity).isPresent()) {
             throw new APIException(APIExceptionEnum.ASSOCIADO_JA_VOTOU);
         }
         //Valida se a votação esta aberta para votar

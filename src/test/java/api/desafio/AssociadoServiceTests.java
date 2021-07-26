@@ -4,7 +4,9 @@ import api.desafio.domain.entities.AssociadoEntity;
 import api.desafio.domain.repository.AssociadoRepository;
 import api.desafio.domain.request.AssociadoRequest;
 import api.desafio.domain.response.ApiResponse;
+import api.desafio.domain.response.ApiResponseAssociadoDTO;
 import api.desafio.domain.services.AssociadoService;
+import api.desafio.domain.services.apiCpf.ApiCpfService;
 import api.desafio.exception.APIException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,43 +15,51 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.LocalDateTime;
 import java.util.*;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class AssociadoServiceTests {
     @Mock
     private AssociadoRepository repositorio;
-
+    @Mock
+    private ApiCpfService apiCpfService;
     @InjectMocks
     private AssociadoService service;
 
-    /*@Test
+    @Test
     public void testInserirAssociado() {
         //Objeto para teste
-        ApiResponse apiResponseTeste = new ApiResponse();
-        AssociadoDTO associadoDTO = new AssociadoDTO("85616741051",15);
-        apiResponseTeste.setObjeto(associadoDTO);
+        ApiResponseAssociadoDTO apiResponseTeste = new ApiResponseAssociadoDTO();
+        AssociadoDTO associadoDTO = new AssociadoDTO("87083162018",15);
+        apiResponseTeste.setAssociado(associadoDTO);
+        apiResponseTeste.setStatus(HttpStatus.OK);
+        apiResponseTeste.setHorario(LocalDateTime.now());
         apiResponseTeste.setMensagem("Associado cadastrado");
-
+        //Objeto da api cpf service
+        String retornoApiCpf = "ABLE_TO_VOTE";
+        Mockito.when(apiCpfService.verificaCpf(associadoDTO.getCpf())).thenReturn(retornoApiCpf);
         //Objeto da service
         AssociadoEntity associadoEntityEntrada = new AssociadoEntity();
-        associadoEntityEntrada.setCpf("85616741051");
+        associadoEntityEntrada.setCpf("87083162018");
+
 
         AssociadoEntity associadoEntityRetorno = new AssociadoEntity();
-        associadoEntityRetorno.setCpf("85616741051");
+        associadoEntityRetorno.setCpf("87083162018");
         associadoEntityRetorno.setId(15L);
 
         Mockito.when(repositorio.save(associadoEntityEntrada)).thenReturn(associadoEntityRetorno);
-        ApiResponse apiResponseService;
-
+        ApiResponseAssociadoDTO apiResponseService;
         AssociadoRequest request = new AssociadoRequest();
-        request.setCpf("85616741051");
+        request.setCpf("87083162018");
         apiResponseService = service.inserirAssociado(request);
 
         Assert.assertEquals(apiResponseService, apiResponseTeste);
     }
-    @Test
+    /*@Test
     public void testGetAssociado(){
         //Objeto do banco
         AssociadoEntity associadoEntity = new AssociadoEntity();
@@ -127,11 +137,6 @@ public class AssociadoServiceTests {
         Mockito.when(repositorio.findByCpf("85616741051")).thenReturn(associadoEntity);
 
         Mockito.when(service.inserirAssociado(request)).thenThrow(APIException.class);
-    }
-
-*/
-
-
-
+    }*/
 
 }

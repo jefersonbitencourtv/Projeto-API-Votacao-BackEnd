@@ -8,6 +8,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@Data
 public class AssociadoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
