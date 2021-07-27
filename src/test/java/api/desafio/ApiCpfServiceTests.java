@@ -24,6 +24,7 @@ public class ApiCpfServiceTests {
     private ApiCpfService apiCpfService;
 
     /*@Test
+
     public void testVerificaCpf() throws IOException {
         Response response = Response.builder().status(200).build();
         Mockito.when(apiCpfCliente.validaCpf("87083162018")).thenReturn(response);
