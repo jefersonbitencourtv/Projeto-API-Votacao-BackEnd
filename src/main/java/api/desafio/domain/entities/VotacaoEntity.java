@@ -1,14 +1,16 @@
 package api.desafio.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@Data
 @Entity(name="votacao")
 public class VotacaoEntity {
     @Id
@@ -16,12 +18,12 @@ public class VotacaoEntity {
     @Column(name="Id")
     private long id;
 
-    //@OneToOne
-    //@JoinColumn(name ="Id_Pauta", referencedColumnName= "Id")
-    //private PautaEntity idPauta;
+    @OneToOne
+    @JoinColumn(name ="Id_Pauta", referencedColumnName= "Id")
+    private PautaEntity pauta;
 
-    @Column(name="Id_Pauta")
-    private long idPauta;
+    //@Column(name="Id_Pauta")
+    //private long idPauta;
 
     @Column(name="Duracao_Votacao")
     private Long duracaoVotacao;

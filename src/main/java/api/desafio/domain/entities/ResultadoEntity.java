@@ -1,13 +1,14 @@
 package api.desafio.domain.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@Data
 @Entity(name="Resultado")
 public class ResultadoEntity {
     @Id
@@ -15,11 +16,13 @@ public class ResultadoEntity {
     @Column(name="id")
     private long id;
 
-    @Column(name="id_votacao")
-    private long idVotacao;
+    @OneToOne
+    @JoinColumn(name="id_votacao", referencedColumnName = "id")
+    private VotacaoEntity votacaoEntity;
 
-    @Column(name="id_pauta")
-    private long idPauta;
+    @OneToOne
+    @JoinColumn(name="id_pauta", referencedColumnName = "Id")
+    private PautaEntity pautaEntity;
 
     @Column(name="quantidade_sim")
     private int qtdSim;

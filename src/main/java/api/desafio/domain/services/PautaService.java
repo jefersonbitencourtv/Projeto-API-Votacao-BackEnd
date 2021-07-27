@@ -4,10 +4,12 @@ import api.desafio.domain.dto.PautaDTO;
 import api.desafio.domain.entities.PautaEntity;
 import api.desafio.domain.repository.PautaRepository;
 import api.desafio.domain.request.PautaRequest;
-import api.desafio.domain.response.ResponsePadrao;
+import api.desafio.domain.response.ApiResponse;
+import api.desafio.domain.response.ApiResponsePautaDTO;
 import api.desafio.exception.APIException;
 import api.desafio.exception.APIExceptionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -17,31 +19,35 @@ public class PautaService {
     @Autowired
     private PautaRepository pautaRepository;
     //Retorna lista de pautas
-    public ResponsePadrao getPauta() {
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setListaObjeto(pautaRepository.findAll().stream()
+    public ApiResponsePautaDTO getPauta() {
+        ApiResponsePautaDTO apiResponsePautaDTO = new ApiResponsePautaDTO();
+        apiResponsePautaDTO.setListaPauta(pautaRepository.findAll().stream()
                 .map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
                 .collect(Collectors.toList()));
-        return responsePadrao;
+        apiResponsePautaDTO.setMensagem("Sucesso!");
+        apiResponsePautaDTO.setStatus(HttpStatus.OK);
+        return apiResponsePautaDTO;
     }
     //Retorna unica pauta ou exception
-    public ResponsePadrao getPautaById(Long id) {
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setObjeto(pautaRepository.findById(id).map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
+    public ApiResponsePautaDTO getPautaById(Long id) {
+        ApiResponsePautaDTO apiResponsePautaDTO = new ApiResponsePautaDTO();
+        apiResponsePautaDTO.setPauta(pautaRepository.findById(id).map(p -> new PautaDTO(p.getId(),p.getTitulo(),p.getDescricao()))
                 .orElseThrow(() ->
-                new APIException(APIExceptionEnum.PautaNaoEncontrada)));
-        return responsePadrao;
+                new APIException(APIExceptionEnum.PAUTA_NAO_ENCONTRADA)));
+        apiResponsePautaDTO.setMensagem("Sucesso!");
+        apiResponsePautaDTO.setStatus(HttpStatus.OK);
+        return apiResponsePautaDTO;
     }
     //Cadastra uma pauta
-    public ResponsePadrao inserirPauta(PautaRequest pautaRequest){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
+    public ApiResponsePautaDTO inserirPauta(PautaRequest pautaRequest){
+        ApiResponsePautaDTO apiResponsePautaDTO = new ApiResponsePautaDTO();
         //Valida se campo descrição esta vazio ou nullo
         if(pautaRequest.getDescricao() == null ||pautaRequest.getDescricao().isEmpty()){
-            throw new APIException(APIExceptionEnum.DescricaoDeveSerPreenchido);
+            throw new APIException(APIExceptionEnum.DESCRICAO_DEVE_SER_PREENCHIDO);
         }
         //Valida se campo titulo esta vazio ou nulo
         if(pautaRequest.getTitulo() == null ||pautaRequest.getTitulo().isEmpty()){
-            throw new APIException(APIExceptionEnum.TituloDeveSerPreenchido);
+            throw new APIException(APIExceptionEnum.TITULO_DEVE_SER_PREENCHIDO);
         }
 
         PautaEntity pautaEntityBanco = new PautaEntity();
@@ -54,10 +60,10 @@ public class PautaService {
         //Cria PautaDTO com o retorno que veio do banco
         PautaDTO pautaDTO = new PautaDTO(pautaEntityBanco.getId(),pautaEntityBanco.getTitulo(),pautaEntityBanco.getDescricao());
 
-        responsePadrao.setTexto("Pauta criada");
-        responsePadrao.setObjeto(pautaDTO);
-
-        return responsePadrao;
+        apiResponsePautaDTO.setMensagem("Pauta criada, ID:" + pautaDTO.getId());
+        apiResponsePautaDTO.setStatus(HttpStatus.CREATED);
+        apiResponsePautaDTO.setPauta(pautaDTO);
+        return apiResponsePautaDTO;
 
     }
 }

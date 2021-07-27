@@ -1,12 +1,20 @@
 package api.desafio.domain.services;
 
-import api.desafio.domain.dto.VotarDTO;
-import api.desafio.domain.entities.VotarEntity;
-import api.desafio.domain.repository.VotarRepository;
+import api.desafio.domain.dto.AssociadoDTO;
+import api.desafio.domain.dto.VotacaoDTO;
+import api.desafio.domain.dto.VotoDTO;
+import api.desafio.domain.entities.AssociadoEntity;
+import api.desafio.domain.entities.VotacaoEntity;
+import api.desafio.domain.entities.VotoEntity;
+import api.desafio.domain.repository.VotoRepository;
 import api.desafio.domain.request.VotarRequest;
-import api.desafio.domain.response.ResponsePadrao;
+import api.desafio.domain.response.ApiResponseAssociadoDTO;
+import api.desafio.domain.response.ApiResponseVotacaoDTO;
+import api.desafio.domain.response.ApiResponseVotoDTO;
+import api.desafio.domain.services.apiCpf.ApiCpfService;
 import api.desafio.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,88 +23,108 @@ import java.util.stream.Collectors;
 @Service
 public class VotoService {
     @Autowired
-    private VotarRepository votarRepository;
+    private VotoRepository votoRepository;
     @Autowired
     private VotacaoService serviceVotacao;
     @Autowired
     private ResultadoService serviceResultado;
     @Autowired
     private AssociadoService serviceAssociado;
+    @Autowired
+    private ApiCpfService apiCpfService;
 
     //Busca uma lista de votos
-    public ResponsePadrao getVoto(){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setListaObjeto(votarRepository.findAll().stream()
-                .map(v->new VotarDTO(v.getId(),v.getIdAssociado(),v.getIdVotacao(),v.getVoto()))
+    public ApiResponseVotoDTO getVoto(){
+        ApiResponseVotoDTO apiResponseVotoDTO = new ApiResponseVotoDTO();
+        apiResponseVotoDTO.setListaVoto(votoRepository.findAll().stream()
+                .map(v -> new VotoDTO(v.getId(), v.getAssociadoEntity().getId(), v.getVotacaoEntity().getId(), v.getVoto()))
                 .collect(Collectors.toList()));
-        return responsePadrao;
+        apiResponseVotoDTO.setMensagem("Sucesso!");
+        apiResponseVotoDTO.setStatus(HttpStatus.OK);
+        return apiResponseVotoDTO;
     }
     //Busca um voto pelo id ou lança uma exception
-    public ResponsePadrao getVotoById(long id){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
-        responsePadrao.setObjeto(
-                votarRepository.findById(id)
-                        .map(v->new VotarDTO(v.getId(),v.getIdAssociado(),v.getIdVotacao(),v.getVoto()))
-                        .orElseThrow(() ->new APIException(APIExceptionEnum.VotoNaoEncontrado)));
-        return responsePadrao;
+    public ApiResponseVotoDTO getVotoById(long id){
+        ApiResponseVotoDTO apiResponseVotoDTO = new ApiResponseVotoDTO();
+        apiResponseVotoDTO.setVoto(
+                votoRepository.findById(id)
+                        .map(v->new VotoDTO(v.getId(),v.getAssociadoEntity().getId(),v.getVotacaoEntity().getId(),v.getVoto()))
+                        .orElseThrow(() ->new APIException(APIExceptionEnum.VOTO_NAO_ENCONTRADO)));
+        apiResponseVotoDTO.setMensagem("Sucesso!");
+        apiResponseVotoDTO.setStatus(HttpStatus.OK);
+        return apiResponseVotoDTO;
     }
 
-    public ResponsePadrao inserirVoto(VotarRequest votarRequest){
-        ResponsePadrao responsePadrao = new ResponsePadrao();
+    public ApiResponseVotoDTO inserirVoto(VotarRequest votarRequest){
+
         //Valida se id votação esta nulo ou vazio
         if(votarRequest.getIdVotacao() == null){
-            throw new APIException(APIExceptionEnum.VotacaoDeveSerFornecida);
+            throw new APIException(APIExceptionEnum.VOTACAO_DEVE_SER_FORNECIDA);
         }
         //Valida se id associado esta nulo ou vazio
         if(votarRequest.getIdAssociado() == null){
-            throw new APIException(APIExceptionEnum.AssociadoDeveSerFornecido);
+            throw new APIException(APIExceptionEnum.ASSOCIADO_DEVE_SER_FORNECIDO);
         }
         //Valida se voto esta nulo ou vazio
         if(votarRequest.getVoto() == null || votarRequest.getVoto().isEmpty()){
-            throw new APIException(APIExceptionEnum.VotoDeveSerFornecido);
+            throw new APIException(APIExceptionEnum.VOTO_DEVE_SER_FORNECIDO);
         }
         //Valida se voto é sim ou não ou nao, transforma em letra maiscula
         votarRequest.setVoto(votarRequest.getVoto().toUpperCase());
         if(!(votarRequest.getVoto().equals("SIM") ||
                 votarRequest.getVoto().equals("NÃO") ||
                 votarRequest.getVoto().equals("NAO"))){
-            throw new APIException(APIExceptionEnum.VotoDeveSerSimOuNao);
+            throw new APIException(APIExceptionEnum.VOTO_DEVE_SER_SIM_OU_NAO);
         }
         //Se voto for não, transforma em nao, sem acento til
         if(votarRequest.getVoto().equals("NÃO")){
             votarRequest.setVoto(votarRequest.getVoto().replace("NÃO", "NAO"));
         }
-        //Valida existe votação ou lança exception
-        serviceVotacao.getVotacaoById(votarRequest.getIdVotacao());
-        //Valida existe associado ou lança exception
-        serviceAssociado.getAssociadoById(votarRequest.getIdAssociado());
 
+        //Valida existe votação ou lança exception
+        ApiResponseVotacaoDTO apiResponseVotacaoDTO = serviceVotacao.getVotacaoById(votarRequest.getIdVotacao());
+        //Valida existe associado ou lança exception
+        ApiResponseAssociadoDTO apiResponseAssociadoDTO = serviceAssociado.getAssociadoById(votarRequest.getIdAssociado());
+        //Cria DTO e entitade votacao e associado
+        AssociadoDTO associadoDTO = apiResponseAssociadoDTO.getAssociado();
+        AssociadoEntity associadoEntity = associadoDTO.associadoEntity();
+
+
+        //Valida se associado pode votar
+        if(apiCpfService.verificaCpf(associadoDTO.getCpf()).equals("UNABLE_TO_VOTE")){
+            throw new APIException(APIExceptionEnum.CPF_NAO_PODE_VOTAR);
+        }
+
+        VotacaoDTO votacaoDTO = apiResponseVotacaoDTO.getVotacao();
+        VotacaoEntity votacaoEntity = votacaoDTO.VotacaoEntity();
         //Valida se o associado já votou
-        if (votarRepository.findByIdAssociadoAndIdVotacao(votarRequest.getIdAssociado(), votarRequest.getIdVotacao()).isPresent()) {
-            throw new APIException(APIExceptionEnum.AssociadoJaVotou);
+        if (votoRepository.findByAssociadoEntityAndVotacaoEntity(associadoEntity, votacaoEntity).isPresent()) {
+            throw new APIException(APIExceptionEnum.ASSOCIADO_JA_VOTOU);
         }
         //Valida se a votação esta aberta para votar
         if (LocalDateTime.now().isAfter(serviceVotacao.getDataAberturaUsoValidacaoInserirVoto(votarRequest.getIdVotacao()).plusMinutes(serviceVotacao.getDuracaoVotacaoUsoValidacaoInserirVoto(votarRequest.getIdVotacao())))){
-           throw new APIException(APIExceptionEnum.VotacaoNaoEstaDisponivel);
+           throw new APIException(APIExceptionEnum.VOTACAO_NAO_ESTA_DISPONIVEL);
         }
 
         //Inserir voto no resultado
         serviceResultado.inserirVotoNoResultado(votarRequest.getVoto().toUpperCase(), votarRequest.getIdVotacao());
 
+
         //Cria entidade com os dados do request
-        VotarEntity votarEntityBanco = new VotarEntity();
-        votarEntityBanco.setVoto(votarRequest.getVoto());
-        votarEntityBanco.setIdAssociado(votarRequest.getIdAssociado());
-        votarEntityBanco.setIdVotacao(votarRequest.getIdVotacao());
+        VotoEntity votoEntityBanco = new VotoEntity();
+        votoEntityBanco.setVoto(votarRequest.getVoto());
+        votoEntityBanco.setAssociadoEntity(associadoEntity);
+        votoEntityBanco.setVotacaoEntity(votacaoEntity);
 
-        votarEntityBanco = votarRepository.save(votarEntityBanco);
+        votoEntityBanco = votoRepository.save(votoEntityBanco);
 
-        //Cria VotarDTO com o retorno do banco
-        VotarDTO dto = new VotarDTO(votarEntityBanco.getId(),votarEntityBanco.getIdAssociado(),votarEntityBanco.getIdVotacao(),votarEntityBanco.getVoto());
-
-        responsePadrao.setObjeto(dto);
-        responsePadrao.setTexto("Voto criado com sucesso");
-        return responsePadrao;
+        //Cria VotoDTO com o retorno do banco
+        VotoDTO votoDTO = new VotoDTO(votoEntityBanco.getId(), votoEntityBanco.getAssociadoEntity().getId(), votoEntityBanco.getVotacaoEntity().getId(), votoEntityBanco.getVoto());
+        ApiResponseVotoDTO apiResponseVotoDTO = new ApiResponseVotoDTO();
+        apiResponseVotoDTO.setMensagem("Sucesso ao votar, ID: " + votoDTO.getId());
+        apiResponseVotoDTO.setStatus(HttpStatus.CREATED);
+        apiResponseVotoDTO.setVoto(votoDTO);
+        return apiResponseVotoDTO;
 
     }
 }

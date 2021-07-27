@@ -1,5 +1,6 @@
 # desafio_digital
 ----Novas implementações
+<<<<<<< HEAD
 
   Branch developer está sendo inserido as novas funcionalidades.
   
@@ -23,11 +24,16 @@ No arquivo application.properties
 Comentar a segunda linha número 2 com // no inicio
 Descomentar as linhas 3,4 e 5
 link do swagger: http://localhost:8080/swagger-ui.html#
+=======
 
-Utilizar o mysql workbench para criar o banco assembleia
+Branch developer está sendo inserido as novas funcionalidades.
+>>>>>>> developer
 
-Inserir as tabelas da pasta TabelasBanco
+-Mapeamento JPA
 
+-Consulta api externa para validação e se cpf pode votar
+
+<<<<<<< HEAD
 Observação:
 Criação do host
 login: root
@@ -74,3 +80,10 @@ Resultado não possui post.
 
 
 
+=======
+-Responses especificos para os endpoints
+
+--Documentação explicativa com swagger
+
+Em andamento: Adequação dos testes aos novos endpoints
+>>>>>>> developer

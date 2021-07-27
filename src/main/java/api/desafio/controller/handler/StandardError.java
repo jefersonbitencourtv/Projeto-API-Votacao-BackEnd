@@ -1,4 +1,4 @@
-package api.desafio.api.exception;
+package api.desafio.controller.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

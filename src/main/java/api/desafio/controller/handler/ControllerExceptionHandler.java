@@ -1,4 +1,4 @@
-package api.desafio.api.exception;
+package api.desafio.controller.handler;
 
 import api.desafio.exception.*;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -8,7 +8,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
@@ -17,12 +16,12 @@ import java.time.LocalDateTime;
 public class ControllerExceptionHandler {
     @ExceptionHandler({InvalidFormatException.class})
     public ResponseEntity<StandardError> campoFormatoInvalido(HttpServletRequest request){
-        var error = new StandardError(LocalDateTime.now(), HttpStatus.CONFLICT.value(), "Formato inválido", "Digite um formato válido");
+        var error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), "Formato inválido", "Digite um formato válido");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<StandardError> validationNotNullNotEmpty(MethodArgumentNotValidException e, HttpServletRequest request){
-        var error = new StandardError(LocalDateTime.now(), HttpStatus.CONFLICT.value(), "Formato invalido", e.getFieldError().getDefaultMessage());
+        var error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), "Formato invalido", e.getFieldError().getDefaultMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
     @ExceptionHandler(APIException.class)

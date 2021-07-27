@@ -1,38 +1,45 @@
 package api.desafio.domain.dto;
 
+import api.desafio.domain.entities.PautaEntity;
 import api.desafio.domain.entities.ResultadoEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import api.desafio.domain.entities.VotacaoEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@Data
+@ApiModel(description = "Dados do resultado")
 public class ResultadoDTO {
+    @ApiModelProperty(value="ID do resultado", required = true)
     private long id;
+    @ApiModelProperty(value="ID da votacao", required = true)
     private long idVotacao;
+    @ApiModelProperty(value="ID da pauta", required = true)
     private long idPauta;
+    @ApiModelProperty(value="Quantidade de votos sim", required = true)
     private int qtdSim;
+    @ApiModelProperty(value="Quantidade de votos não", required = true)
     private int qtdNao;
 
-    public ResultadoDTO(ResultadoEntity r){
+    /*public ResultadoDTO(ResultadoEntity r){
         this.id = r.getId();
-        this.idVotacao = r.getIdVotacao();
-        this.idPauta = r.getIdPauta();
+        this.votacaoEntity = r.getVotacaoEntity();
+        this.pautaEntity = r.getPautaEntity();
         this.qtdSim = r.getQtdSim();
         this.qtdNao = r.getQtdNao();
-    }
-
-    public void setIdPauta(long idPauta) {
-        this.idPauta = idPauta;
-    }
-
-    public long getIdPauta() {
-        return idPauta;
-    }
+    }*/
 
     public ResultadoEntity ResultadoEntity(){
-        return new ResultadoEntity(getId(), getIdVotacao(), getIdPauta(), getQtdSim(), getQtdNao());
+        VotacaoEntity votacaoEntity = new VotacaoEntity();
+        PautaEntity pautaEntity = new PautaEntity();
+        votacaoEntity.setId(idVotacao);
+        pautaEntity.setId(idPauta);
+        return new ResultadoEntity(getId(), votacaoEntity, pautaEntity, getQtdSim(), getQtdNao());
     }
 }
 
