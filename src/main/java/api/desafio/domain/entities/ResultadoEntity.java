@@ -7,6 +7,8 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@Data
 @Entity(name="Resultado")
 public class ResultadoEntity {
     @Id

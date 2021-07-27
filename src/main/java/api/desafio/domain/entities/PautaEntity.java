@@ -8,6 +8,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
+@Data
 public class PautaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

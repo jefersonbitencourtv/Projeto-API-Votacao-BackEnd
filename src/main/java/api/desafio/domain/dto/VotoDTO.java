@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 @ApiModel(description = "Dados do voto")
 public class VotoDTO {
     @ApiModelProperty(value="ID do voto", required = true)

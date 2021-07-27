@@ -5,8 +5,10 @@ import api.desafio.domain.entities.PautaEntity;
 import api.desafio.domain.repository.PautaRepository;
 import api.desafio.domain.request.PautaRequest;
 import api.desafio.domain.response.ApiResponse;
+import api.desafio.domain.response.ApiResponsePautaDTO;
 import api.desafio.domain.services.PautaService;
 import api.desafio.exception.APIException;
+import io.swagger.annotations.Api;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,12 +32,12 @@ public class PautaServiceTests {
     @InjectMocks
     private PautaService service;
 
-   /* @Test
+    @Test
     public void testInserirPauta() {
         //Objeto para teste
-        ApiResponse apiResponseTeste = new ApiResponse();
+        ApiResponsePautaDTO apiResponseTeste = new ApiResponsePautaDTO();
         PautaDTO dto = new PautaDTO(15L,"aa","bb");
-        apiResponseTeste.setObjeto(dto);
+        apiResponseTeste.setPauta(dto);
         apiResponseTeste.setMensagem("Pauta criada");
 
         //Objeto da service
@@ -50,7 +52,7 @@ public class PautaServiceTests {
 
         Mockito.when(repositorio.save(pautaEntityEntrada)).thenReturn(pautaEntityRetorno);
 
-        ApiResponse apiResponseService;
+        ApiResponsePautaDTO apiResponseService;
         PautaRequest pautaRequest = new PautaRequest();
         pautaRequest.setTitulo("aa");
         pautaRequest.setDescricao("bb");
@@ -69,16 +71,16 @@ public class PautaServiceTests {
         List<PautaEntity> listaPautaEntity = new ArrayList<>();
         listaPautaEntity.add(pautaEntity);
 
-        Mockito.when(repositorio.findAll()).thenReturn(listaPautaEntity);
-        ApiResponse apiResponseService;
+        Mockito.when(repositorio.findAll()).thenReturn(listaPautaEntity).thenThrow(APIException.class);
+        ApiResponsePautaDTO apiResponseService;
         apiResponseService = service.getPauta();
 
         //Objeto para teste
-        ApiResponse apiResponseTeste = new ApiResponse();
+        ApiResponsePautaDTO apiResponseTeste = new ApiResponsePautaDTO();
         PautaDTO pautaDTO = new PautaDTO(15L,"aa","bb");
         List<PautaDTO> listaPautaDTO = new ArrayList<>();
         listaPautaDTO.add(pautaDTO);
-        apiResponseTeste.setListaObjeto(Arrays.asList(listaPautaDTO.toArray()));
+        apiResponseTeste.setListaPauta(listaPautaDTO);
 
         Assert.assertEquals(apiResponseService, apiResponseTeste);
 
@@ -92,17 +94,24 @@ public class PautaServiceTests {
         pautaEntity.setId(15L);
         Mockito.when(repositorio.findById(15L)).thenReturn(Optional.of(pautaEntity));
 
-        ApiResponse apiResponseService;
+        ApiResponsePautaDTO apiResponseService;
         apiResponseService = service.getPautaById(15L);
 
         //Objeto para teste
-        ApiResponse apiResponseTeste = new ApiResponse();
+        ApiResponsePautaDTO apiResponseTeste = new ApiResponsePautaDTO();
         PautaDTO pautaDTO = new PautaDTO(15L,"aa","bb");
-        apiResponseTeste.setObjeto(pautaDTO);
+        apiResponseTeste.setPauta(pautaDTO);
 
         Assert.assertEquals(apiResponseService, apiResponseTeste);
 
     }
+
+    @Test(expected = APIException.class)
+    public void testGetPautaByIdNãoEncontrada(){
+        Mockito.when(service.getPautaById(1L)).thenThrow(APIException.class);
+    }
+
+
     @Test(expected = APIException.class)
     public void testTituloDeveSerPreenchido(){
         PautaRequest pautaRequest = new PautaRequest();
@@ -119,6 +128,5 @@ public class PautaServiceTests {
         Mockito.when(service.inserirPauta(pautaRequest)).thenThrow(APIException.class);
 
     }
-*/
 }
 

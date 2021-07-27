@@ -7,7 +7,7 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@EqualsAndHashCode
 @Getter
 @Setter
 @ApiModel(description = "Dados do associado")

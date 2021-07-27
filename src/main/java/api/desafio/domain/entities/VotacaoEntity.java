@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@Data
 @Entity(name="votacao")
 public class VotacaoEntity {
     @Id

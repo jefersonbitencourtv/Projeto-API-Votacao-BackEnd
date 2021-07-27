@@ -8,7 +8,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@Data
+@EqualsAndHashCode
 public class AssociadoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -9,6 +9,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@Data
 @ApiModel(description = "Dados da pauta")
 public class PautaDTO {
     @ApiModelProperty(value="ID da pauta", required = true)

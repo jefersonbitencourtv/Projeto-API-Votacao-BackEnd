@@ -9,7 +9,6 @@ import feign.Response;
 import feign.Util;
 import io.swagger.annotations.Api;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

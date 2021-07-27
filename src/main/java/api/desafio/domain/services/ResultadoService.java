@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 @Service
 public class ResultadoService {
     @Autowired
@@ -70,7 +69,7 @@ public class ResultadoService {
         return apiResponseResultadoDTO;
     }
     //Método para auxiliar na inserção de um resultado pois não lança exception.
-    public Optional<ResultadoDTO> getResultadoByIdVotacaoUsoParaTestarInserirResultado(long idVotacao){
+    public Optional<ResultadoDTO> getResultadoByIdVotacaoUsoParaTestarInserirResultado(Long idVotacao){
         VotacaoEntity votacaoEntity = new VotacaoEntity();
         votacaoEntity.setId(idVotacao);
         return resultadoRepository.findByVotacaoEntity(votacaoEntity)

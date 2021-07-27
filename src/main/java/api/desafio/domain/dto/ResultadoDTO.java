@@ -11,6 +11,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@Data
 @ApiModel(description = "Dados do resultado")
 public class ResultadoDTO {
     @ApiModelProperty(value="ID do resultado", required = true)

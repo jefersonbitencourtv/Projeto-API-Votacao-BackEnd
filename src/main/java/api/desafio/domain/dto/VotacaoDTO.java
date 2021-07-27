@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@Data
 @ApiModel(description = "Dados da votação")
 public class VotacaoDTO {
     @ApiModelProperty(value="ID da votação", required = true)

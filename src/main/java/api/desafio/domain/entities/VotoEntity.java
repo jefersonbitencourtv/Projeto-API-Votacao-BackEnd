@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Entity(name="votar")
 public class VotoEntity {
     @Id
