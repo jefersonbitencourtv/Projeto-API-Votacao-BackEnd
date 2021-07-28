@@ -21,10 +21,15 @@ https://api-votacao-sicredi.herokuapp.com/swagger-ui.html
 ------------------------
 
 Caso queira rodar na propria maquina:
+
 No arquivo application.properties
+
 Comentar a segunda linha número 2 com // no inicio
+
 Descomentar as linhas 3,4 e 5
+
 link do swagger: http://localhost:8080/swagger-ui.html#
+
 =======
 
 
