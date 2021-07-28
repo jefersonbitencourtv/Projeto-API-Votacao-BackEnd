@@ -1,6 +1,5 @@
 # desafio_digital
 ----Novas implementações
-<<<<<<< HEAD
 
   Branch developer está sendo inserido as novas funcionalidades.
   
@@ -10,7 +9,9 @@
   
   -Responses especificos para os endpoints
   
-  Em implementação documentação mais elaborada com swagger
+  -Documentação elaborada com swagger
+  
+  -Teste cobrindo 100% das linhas das services, implementando teste da api service cpf(api externa)
   
   
 ----Instruções para uso
@@ -26,14 +27,9 @@ Descomentar as linhas 3,4 e 5
 link do swagger: http://localhost:8080/swagger-ui.html#
 =======
 
-Branch developer está sendo inserido as novas funcionalidades.
->>>>>>> developer
 
--Mapeamento JPA
 
--Consulta api externa para validação e se cpf pode votar
 
-<<<<<<< HEAD
 Observação:
 Criação do host
 login: root
@@ -76,14 +72,3 @@ Resultado controller:
 /api/v1/resultado/votacao/{id}  GET -- deve ser fornecido o id da votacao, retorna o resultado pelo id da votacao
 
 Resultado não possui post.
-
-
-
-
-=======
--Responses especificos para os endpoints
-
---Documentação explicativa com swagger
-
-Em andamento: Adequação dos testes aos novos endpoints
->>>>>>> developer
