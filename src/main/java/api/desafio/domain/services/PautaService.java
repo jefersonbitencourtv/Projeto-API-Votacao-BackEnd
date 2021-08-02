@@ -16,8 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class PautaService {
+    private final PautaRepository pautaRepository;
+
     @Autowired
-    private PautaRepository pautaRepository;
+    public PautaService(PautaRepository pautaRepository) {
+        this.pautaRepository = pautaRepository;
+    }
+
     //Retorna lista de pautas
     public ApiResponsePautaDTO getPauta() {
         ApiResponsePautaDTO apiResponsePautaDTO = new ApiResponsePautaDTO();

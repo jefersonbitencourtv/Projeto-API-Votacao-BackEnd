@@ -18,6 +18,7 @@ public class AssociadoService {
     private final AssociadoRepository associadoRepository;
     private final ApiCpfService apiCpfService;
 
+    @Autowired
     public AssociadoService(AssociadoRepository associadoRepository, ApiCpfService apiCpfService) {
         this.associadoRepository = associadoRepository;
         this.apiCpfService = apiCpfService;

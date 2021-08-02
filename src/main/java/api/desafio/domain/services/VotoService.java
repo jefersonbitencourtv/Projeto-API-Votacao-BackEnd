@@ -22,16 +22,20 @@ import java.util.stream.Collectors;
 
 @Service
 public class VotoService {
-    @Autowired
     private VotoRepository votoRepository;
-    @Autowired
     private VotacaoService serviceVotacao;
-    @Autowired
     private ResultadoService serviceResultado;
-    @Autowired
     private AssociadoService serviceAssociado;
-    @Autowired
     private ApiCpfService apiCpfService;
+
+    @Autowired
+    public VotoService(VotoRepository votoRepository, VotacaoService serviceVotacao, ResultadoService serviceResultado, AssociadoService serviceAssociado, ApiCpfService apiCpfService) {
+        this.votoRepository = votoRepository;
+        this.serviceVotacao = serviceVotacao;
+        this.serviceResultado = serviceResultado;
+        this.serviceAssociado = serviceAssociado;
+        this.apiCpfService = apiCpfService;
+    }
 
     //Busca uma lista de votos
     public ApiResponseVotoDTO getVoto(){
@@ -43,6 +47,7 @@ public class VotoService {
         apiResponseVotoDTO.setStatus(HttpStatus.OK);
         return apiResponseVotoDTO;
     }
+
     //Busca um voto pelo id ou lança uma exception
     public ApiResponseVotoDTO getVotoById(long id){
         ApiResponseVotoDTO apiResponseVotoDTO = new ApiResponseVotoDTO();

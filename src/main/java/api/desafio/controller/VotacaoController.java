@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/votacao")
 @Api(description="Funcionalidades para votacao", tags = "Votacao controller")
 public class VotacaoController {
+    private final VotacaoService service;
+
     @Autowired
-    private VotacaoService service;
+    public VotacaoController(VotacaoService service) {
+        this.service = service;
+    }
 
     @ApiOperation(value="Mostra todas votações")
     @ApiResponses({

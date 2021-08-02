@@ -20,11 +20,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class VotacaoService {
+    private final VotacaoRepository votacaoRepository;
+    private final PautaService pautaService;
 
     @Autowired
-    private VotacaoRepository votacaoRepository;
-    @Autowired
-    private PautaService pautaService;
+    public VotacaoService(VotacaoRepository votacaoRepository, PautaService pautaService) {
+        this.votacaoRepository = votacaoRepository;
+        this.pautaService = pautaService;
+    }
 
     public ApiResponseVotacaoDTO getVotacao() {
         ApiResponseVotacaoDTO apiResponseVotacaoDTO = new ApiResponseVotacaoDTO();

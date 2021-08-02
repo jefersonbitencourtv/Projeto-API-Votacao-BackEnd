@@ -15,8 +15,12 @@ import java.io.IOException;
 @RequestMapping("/api/v1/associado")
 @Api(description="Funcionalidades para associados", tags = "Associado controller")
 public class AssociadoController {
-    @Autowired
     private AssociadoService service;
+
+    @Autowired
+    public AssociadoController(AssociadoService service) {
+        this.service = service;
+    }
 
     @ApiOperation(value="Mostra todos os associados")
     @ApiResponses({

@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/pauta")
 @Api(description="Funcionalidades para pautas", tags = "Pauta controller")
 public class PautaController {
+    private final PautaService service;
+
     @Autowired
-    private PautaService service;
+    public PautaController(PautaService service) {
+        this.service = service;
+    }
 
     @ApiOperation(value="Mostra todas pautas")
     @ApiResponses({

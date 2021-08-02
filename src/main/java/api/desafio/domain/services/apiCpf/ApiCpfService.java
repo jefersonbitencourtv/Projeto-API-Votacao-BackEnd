@@ -4,6 +4,8 @@ import api.desafio.cliente.ApiCpfCliente;
 import api.desafio.domain.dto.apiCpf.ApiCpfDTO;
 import api.desafio.exception.APIException;
 import api.desafio.exception.APIExceptionEnum;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.Util;
@@ -25,11 +27,11 @@ public class ApiCpfService {
     private final ObjectMapper mapper;
 
     public ApiCpfService(ApiCpfCliente apiCpfCliente, ObjectMapper mapper) {
-       this.apiCpfCliente = apiCpfCliente;
-       this.mapper = mapper;
+        this.apiCpfCliente = apiCpfCliente;
+        this.mapper = mapper;
     }
 
-    public String verificaCpf(String cpf){
+    public String verificaCpf(String cpf) {
         try {
             Response responseApi = apiCpfCliente.validaCpf(cpf);
             if (responseApi.status() == 404) {
@@ -38,11 +40,13 @@ public class ApiCpfService {
             String bodyStr = Util.toString(responseApi.body().asReader(StandardCharsets.UTF_8));
             ApiCpfDTO apiCpfDTO = mapper.readValue(bodyStr, ApiCpfDTO.class);
             return apiCpfDTO.getStatus();
-        } catch (IOException ex){
+        } catch (JsonMappingException ex) {
+            throw new APIException(APIExceptionEnum.ERRO_API);
+        } catch (JsonProcessingException ex) {
+            throw new APIException(APIExceptionEnum.ERRO_API);
+        } catch (IOException ex) {
             throw new APIException(APIExceptionEnum.ERRO_API);
         }
-
     }
-
 }
 

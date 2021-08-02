@@ -16,8 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/resultado")
 @Api(description="Funcionalidades para resultados", tags = "Resultado controller")
 public class ResultadoController {
+    private final ResultadoService service;
+
     @Autowired
-    private ResultadoService service;
+    public ResultadoController(ResultadoService service) {
+        this.service = service;
+    }
 
     @ApiOperation(value="Mostra todos resultados")
     @ApiResponses({

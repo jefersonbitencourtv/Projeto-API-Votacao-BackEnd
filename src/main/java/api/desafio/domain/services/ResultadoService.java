@@ -17,10 +17,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
 public class ResultadoService {
+    private final ResultadoRepository resultadoRepository;
+    private final VotacaoService votacaoService;
+
     @Autowired
-    private ResultadoRepository resultadoRepository;
-    @Autowired
-    private VotacaoService votacaoService;
+    public ResultadoService(ResultadoRepository resultadoRepository, VotacaoService votacaoService) {
+        this.resultadoRepository = resultadoRepository;
+        this.votacaoService = votacaoService;
+    }
+
     public void inserirVotoNoResultado(String voto, long idVotacao) {
         ResultadoDTO resultadoDTO;
         //Se ja existe resultado no banco para a votacao vai criar um ResultadoDTO com os dados do banco
