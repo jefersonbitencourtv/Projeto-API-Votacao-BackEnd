@@ -5,11 +5,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-@Getter
-@Setter
+//nao precisa por essas anotacoes pq elas já estão incluídas no @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Data
 @ApiModel(description = "Dados da pauta")
 public class PautaDTO {
@@ -20,10 +18,13 @@ public class PautaDTO {
     @ApiModelProperty(value="Descrição da pauta", required = true)
     private String descricao;
 
-    public PautaDTO(PautaEntity p){
-        this.id =  p.getId();
-        this.titulo = p.getTitulo();
-        this.descricao = p.getDescricao();
+    //Sugestao de nome para o parâmetro, é super importante escolher bons nome
+    //Tu colocou @Allargdsconstructor entao supostamente nao precisaria colocar esse construtor aqui com parametros, eu nao entendi na vdd pq esse construtor
+    //vm mete uma call dai tu me explica
+    public PautaDTO(PautaEntity pautaEntity){
+        this.id =  pautaEntity.getId();
+        this.titulo = pautaEntity.getTitulo();
+        this.descricao = pautaEntity.getDescricao();
     }
 
     public PautaEntity PautaEntity(){
