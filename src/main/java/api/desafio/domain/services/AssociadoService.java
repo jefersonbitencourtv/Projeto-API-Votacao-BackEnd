@@ -17,15 +17,21 @@ import java.util.stream.Collectors;
 public class AssociadoService {
     private final AssociadoRepository associadoRepository;
     private final ApiCpfService apiCpfService;
+    //injecao pra manter uma instancia unica gerenciada pelo spring
+    //teria que anotar dai a classe com @Component pra ser possível injetar
+    private final ApiResponseAssociadoDTO apiResponseAssociadoDto;
 
-    public AssociadoService(AssociadoRepository associadoRepository, ApiCpfService apiCpfService) {
+    @Autowired
+    public AssociadoService(AssociadoRepository associadoRepository, ApiCpfService apiCpfService, ApiResponseAssociadoDTO apiResponseAssociadoDto) {
         this.associadoRepository = associadoRepository;
         this.apiCpfService = apiCpfService;
+        this.apiResponseAssociadoDto = apiResponseAssociadoDto;
     }
 
     //Retorna uma lista de associados
     public ApiResponseAssociadoDTO getAssociado(){
-        ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
+        
+        //da pra meter um metodo especifico da parte que tu faz o map pra melhorar legibilidade 
         apiResponseAssociadoDTO.setListaAssociado(associadoRepository.findAll().stream().map(a ->
                 new AssociadoDTO(a.getCpf(),a.getId()))
                 .collect(Collectors.toList()));
@@ -36,7 +42,6 @@ public class AssociadoService {
     }
     //Retorna um unico exception ou nulo
     public ApiResponseAssociadoDTO getAssociadoById(Long id){
-        ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
         apiResponseAssociadoDTO.setAssociado(associadoRepository.findById(id)
                 .map(a -> new AssociadoDTO(a.getCpf(),a.getId()))
                 .orElseThrow(()-> new APIException(APIExceptionEnum.ASSOCIADO_NAO_ENCONTRADO)));
@@ -45,35 +50,16 @@ public class AssociadoService {
 
         return apiResponseAssociadoDTO;
     }
-    public ApiResponseAssociadoDTO inserirAssociado(AssociadoRequest associadoRequest) {
-        ApiResponseAssociadoDTO apiResponseAssociadoDTO = new ApiResponseAssociadoDTO();
-        //Valida cpf nulo ou vazio
-        if(associadoRequest.getCpf() == null ||associadoRequest.getCpf().isEmpty()){
-            throw new APIException(APIExceptionEnum.CPF_DEVE_SER_PREENCHIDO);
-        }
-        //Valida cpf com apenas números
-        if(!(associadoRequest.getCpf().matches("[0-9]*"))){
-            throw new APIException(APIExceptionEnum.CPF_DEVE_CONTER_APENAS_NUMEROS);
-        }
-        //Valida cpf com exatamente 11 números
-        if(associadoRequest.getCpf().length() != 11){
-            throw new APIException(APIExceptionEnum.CPF_DEVE_CONTER_11_NUMEROS);
-        }
-        //Valida cpf se é valido, bibilioteca utils ValidadorCPF
-        /*if(ValidadorCPF.isValidCPF(associadoRequest.getCpf()) == false) {
-            throw new APIException(APIExceptionEnum.CPF_INVALIDO);
-        }*/
-        //Valida cpf se é valido, utilizando a api externa
-        apiCpfService.verificaCpf(associadoRequest.getCpf());
+   public ApiResponseAssociadoDTO inserirAssociado(AssociadoRequest associadoRequest) {
+       //coloquei numa variavel pra enxutar
+        String cpf = associadoRequest.getCpf();
 
-        //Valida se já existe aquele cpf no banco
-        if(associadoRepository.findByCpf(associadoRequest.getCpf()).isPresent()){
-            throw new APIException(APIExceptionEnum.CPF_JA_EXISTE_ASSOCIADO);
-        }
+       //peguei todos aqueles ifs e meti numa método e dei um nome pra ele 
+        validaCpf(cpf);
 
         AssociadoEntity associadoEntityBanco = new AssociadoEntity();
         //Seta entidade com os dados do request
-        associadoEntityBanco.setCpf(associadoRequest.getCpf());
+        associadoEntityBanco.setCpf(cpf);
         associadoEntityBanco = associadoRepository.save(associadoEntityBanco);
 
         //Cria AssociadoDTO com os parametros do banco
@@ -83,5 +69,44 @@ public class AssociadoService {
         apiResponseAssociadoDTO.setStatus(HttpStatus.CREATED);
         apiResponseAssociadoDTO.setAssociado(associadoDTO);
         return apiResponseAssociadoDTO;
+    }
+
+    //tipo se o cara quer deixar muito legível dá pra fazer isso, pra cada coisa dar um nome pq daí quem for ler vai entender pelo menos o que cad amétodo faz
+    //o foda que ficou 5 chamada de método nisso, por isso talvez uma classe separada pra fazer isso seria melhor, pq tu soca tudo nela de método e daí só chama
+    //o metodo principal dela e dai ficaria melhor
+    public void validaCpf(String cpf) {
+        checkIfCpfIsNullOrEmpty(cpf);
+        cpfMustHaveOnlyNumbers(cpf);
+        cpfMustHave11Characters(cpf);
+        checkCpfByExternalApi(cpf);
+        checkIfCpfAlreadyExists(cpf);
+    }
+
+    private void checkCpfByExternalApi(String cpf) {
+        apiCpfService.verificaCpf(cpf);
+    }
+
+    private void checkIfCpfAlreadyExists(String cpf) {
+        if(associadoRepository.findByCpf(cpf).isPresent()){
+            throw new APIException(APIExceptionEnum.CPF_JA_EXISTE_ASSOCIADO);
+        }
+    }
+
+    private void cpfMustHaveOnlyNumbers(String cpf) {
+        if(!(cpf.matches("[0-9]*"))){
+            throw new APIException(APIExceptionEnum.CPF_DEVE_CONTER_APENAS_NUMEROS);
+        }
+    }
+
+    private void cpfMustHave11Characters(String cpf) {
+        if(cpf.length() != 11){
+            throw new APIException(APIExceptionEnum.CPF_DEVE_CONTER_11_NUMEROS);
+        }
+    }
+
+    private void checkIfCpfIsNullOrEmpty(String cpf) {
+        if(cpf == null ||cpf.isEmpty()){
+            throw new APIException(APIExceptionEnum.CPF_DEVE_SER_PREENCHIDO);
+        }
     }
 }
